@@ -1,0 +1,11 @@
+{
+  "name": "nike-size-run",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix products/pegasus-43-nextjs",
+    "build": "npm run build --prefix products/pegasus-43-nextjs",
+    "start": "npm run start --prefix products/pegasus-43-nextjs",
+    "lint": "npm run lint --prefix products/pegasus-43-nextjs"
+  }
+}

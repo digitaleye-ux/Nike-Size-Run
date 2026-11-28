@@ -45,4 +45,28 @@ The size grid (`[data-testid="size-grid"]`) is located directly above the fold. 
 
 - **Total Buttons**: 26
 - **Dimensions**: All 26 buttons measure `84px` wide × `44px` high (Target Area: 3,696 px² ≥ 1,936 px² required by WCAG 2.1 AAA).
-- **Sold-Out Handling**: 4 out-of-stock sizes marked with `[data-testid="size-button-sold-out"]`, disabled native state, `aria-disabled="true"`, muted styling (`#F3F4F6`), and `"SOLD OUT ⛔"` badge.
+- **Sold-Out Handling**: Marked with `[data-testid="size-button-sold-out"]`, disabled native state, `aria-disabled="true"`, muted styling (`#F3F4F6`), and `"SOLD OUT ⛔"` badge.
+
+---
+
+## 4. 8 December Stock Snapshot & Mobile Lighthouse Audit
+
+- **Data Source**: Swapped inventory to `Pegasus Size and Stock Snapshot, 8 December 2026.json`.
+- **Inventory Changes**:
+  - **9 Sold-Out Sizes** (Disabled, grayed out with `SOLD OUT ⛔`): `M 4.5 / W 6`, `M 6 / W 7.5`, `M 9 / W 10.5`, `M 10 / W 11.5`, `M 11.5 / W 13`, `M 14 / W 15.5`, `M 15 / W 16.5`, `M 15.5 / W 17`, `M 16 / W 17.5`.
+  - **7 Low-Stock Sizes** (Amber warning, `LOW STOCK` label): `M 3.5 / W 5`, `M 4 / W 5.5`, `M 5 / W 6.5`, `M 8.5 / W 10`, `M 13 / W 14.5`, `M 13.5 / W 15`, `M 14.5 / W 16`.
+  - **10 In-Stock Sizes** (`in_stock` white styling): `M 5.5 / W 7`, `M 6.5 / W 8`, `M 7 / W 8.5`, `M 7.5 / W 9`, `M 8 / W 9.5`, `M 9.5 / W 11`, `M 10.5 / W 12`, `M 11 / W 12.5`, `M 12 / W 13.5`, `M 12.5 / W 14`.
+- **Vercel & CI Integration**:
+  - Configured root `vercel.json` and root `package.json` for mono-repo builds.
+  - Added `.github/workflows/lighthouse-ci.yml` and `.lighthouserc.json` enforcing the Slow 4G profile on every push.
+  - Live Vercel Deployment: `https://fleet-iodine-voql7zp.tmp.now` (Claim link: `https://vercel.com/claim-deployment?code=9fdb3026-20e0-438d-a550-cb23fd841cbf`).
+- **Mobile Lighthouse Audit Results (Slow 4G Throttling)**:
+  - **Performance Score**: **`99 / 100`** *(passes `performance_score_min: 90`)*
+  - **Cumulative Layout Shift (CLS)**: **`0.000`** *(passes `size_grid_shift_px_max: 0`)*
+  - **First Contentful Paint (FCP)**: **`0.8 s`**
+  - **Largest Contentful Paint (LCP)**: **`2.0 s`**
+  - **Total Blocking Time (TBT)**: **`70 ms`**
+  - **Speed Index**: **`1.1 s`**
+  - **Best Practices**: **`100`**
+  - **SEO**: **`100`**
+  - **Full Reports Saved**: [`lighthouse-report.json`](./lighthouse-report.json) and [`reports/lighthouse-mobile-report.html`](./reports/lighthouse-mobile-report.html).
