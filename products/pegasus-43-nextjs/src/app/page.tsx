@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useId } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export type SizeItem = {
   sku: string;
@@ -439,6 +439,17 @@ const INITIAL_SIZES: SizeItem[] = [
   }
 ];
 
+const PRODUCT_SPECS = [
+  { label: 'Style', value: 'HV7521-001', tabular: true },
+  { label: 'Colorway', value: 'Black / White / Volt', tabular: false },
+  { label: 'Upper', value: 'Engineered mesh, synthetic overlays', tabular: false },
+  { label: 'Midsole', value: 'Nike React foam', tabular: false },
+  { label: 'Outsole', value: 'Waffle-inspired rubber tread', tabular: false },
+  { label: 'Weight', value: '260 g (Men’s 9)', tabular: true },
+  { label: 'Fit', value: 'True to size', tabular: false },
+  { label: 'Launch', value: '10 December 2026', tabular: true },
+] as const;
+
 export default function MobileProductPage() {
   const [sizes, setSizes] = useState<SizeItem[]>(INITIAL_SIZES);
   const [pickedSku, setPickedSku] = useState<string | null>(null);
@@ -447,11 +458,20 @@ export default function MobileProductPage() {
   const [showToast, setShowToast] = useState<string | null>(null);
   const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
   const [showSizeModal, setShowSizeModal] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const sizeGuideTriggerRef = useRef<HTMLButtonElement>(null);
+  const modalCloseRef = useRef<HTMLButtonElement>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const images = [
-    { src: '/nike-pegasus-43.svg', label: 'Side profile view of Nike Pegasus 43 in Black/White-Volt' },
-    { src: '/nike-pegasus-43-front.svg', label: 'Top-down engineered mesh view of Nike Pegasus 43' }
+    {
+      src: '/pegasus-43-side.webp',
+      label: 'Side profile of Nike Pegasus 43 in Black, White, and Volt',
+    },
+    {
+      src: '/pegasus-43-top.webp',
+      label: 'Three-quarter top view of Nike Pegasus 43 in Black, White, and Volt',
+    },
   ];
 
   // Refresh sizes from public/sizes.json if updated
@@ -471,6 +491,27 @@ export default function MobileProductPage() {
       });
   }, []);
 
+  // Focus management & Escape handling for Size Guide dialog
+  useEffect(() => {
+    if (!showSizeModal) return;
+    modalCloseRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowSizeModal(false);
+        sizeGuideTriggerRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSizeModal]);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
   const selectedSize = sizes.find((s) => s.sku === pickedSku);
 
   const handleSelectSize = (size: SizeItem) => {
@@ -487,96 +528,77 @@ export default function MobileProductPage() {
       return;
     }
     setBagCount((prev) => prev + 1);
-    setShowToast(`Added Size ${selectedSize.size_label} to your Bag!`);
-    setTimeout(() => setShowToast(null), 3500);
+    setShowToast(`Added ${selectedSize.size_label} to Bag`);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setShowToast(null), 3200);
   };
 
-  const handleBuyNow = () => {
-    if (!selectedSize) {
-      setShowErrorAlert(true);
-      return;
-    }
-    setShowToast(`Proceeding to instant checkout for Size ${selectedSize.size_label}...`);
-    setTimeout(() => setShowToast(null), 3500);
+  const handleCloseSizeModal = () => {
+    setShowSizeModal(false);
+    sizeGuideTriggerRef.current?.focus();
   };
 
   return (
-    <div className="w-full flex justify-center bg-[#eef0f2] sm:px-4 sm:py-4">
-      {/* 375px Mobile Container as planned */}
-      <main
-        style={{
-          width: '100%',
-          maxWidth: '375px',
-          margin: '0 auto',
-          backgroundColor: '#ffffff',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative'
-        }}
-      >
-        {/* Sticky Mobile App Bar */}
-        <header
-          style={{
-            height: '52px',
-            padding: '0 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid #f0f0f2',
-            backgroundColor: '#ffffff',
-            position: 'sticky',
-            top: 0,
-            zIndex: 30
-          }}
-        >
-          {/* Nike Swoosh Brand Logo */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <svg width="48" height="20" viewBox="0 0 24 24" fill="#1d1d1f">
-              <path d="M21.707 5.293c-2.484 2.128-5.32 4.195-8.497 6.182-2.923 1.828-5.748 3.33-8.46 4.5-.473.204-.954.269-1.44.194-.486-.076-.897-.33-1.233-.762-.336-.432-.473-.93-.41-1.493.062-.563.308-1.127.737-1.692 1.341-1.768 2.926-3.411 4.755-4.929 1.828-1.517 3.82-2.825 5.975-3.924.316-.162.646-.176.99-.043.344.133.585.378.723.734.137.357.108.706-.086 1.048-.194.342-.51.62-.947.834-1.785.874-3.46 1.96-5.025 3.257-1.565 1.297-2.91 2.73-4.035 4.3-.086.12-.119.23-.099.33.02.1.083.173.189.219.106.046.222.046.348 0 .126-.046.262-.126.408-.24 2.296-1.79 4.782-3.465 7.458-5.026 2.676-1.56 5.568-2.99 8.675-4.288.384-.162.723-.133 1.018.086.295.22.428.53.398.93z" />
+    <div className="w-full flex justify-center bg-white sm:bg-[var(--surface-canvas)] sm:px-4 sm:py-6">
+      <main className="w-full max-w-[375px] bg-[var(--surface-page)] sm:rounded-2xl sm:shadow-[0_0_0_1px_rgb(0_0_0/0.06),0_12px_32px_-8px_rgb(0_0_0/0.08)] overflow-hidden flex flex-col relative">
+        {/* Sticky Mobile Header */}
+        <header className="h-[52px] px-4 flex items-center justify-between bg-[var(--surface-page)] hairline-b sticky top-0 z-30">
+          <div className="flex items-center text-[var(--ink-primary)]" aria-label="Nike">
+            <svg
+              width="52"
+              height="19"
+              viewBox="0 0 69 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M68.25 1.07L18.43 22.18C12.35 24.75 7.42 23.36 5.14 19.65C2.86 15.94 4.19 10.37 8.46 5.86C11.15 3.02 14.23 1.25 15.66 0.61C12.97 3.91 10.74 7.77 12.14 11.49C13.34 14.68 17.56 15.39 22.84 13.71L68.25 1.07Z" />
             </svg>
           </div>
 
-          {/* Action icons: Search & Bag with dynamic count badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="flex items-center gap-1">
             <button
+              type="button"
               aria-label="Search"
-              style={{ background: 'none', border: 'none', padding: '6px', cursor: 'pointer', display: 'flex' }}
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-[var(--ink-primary)] pressable"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7.5" />
+                <line x1="20.5" y1="20.5" x2="16.5" y2="16.5" />
               </svg>
             </button>
+
             <button
+              type="button"
               aria-label={`Shopping Bag, ${bagCount} items`}
-              style={{ background: 'none', border: 'none', padding: '6px', cursor: 'pointer', position: 'relative', display: 'flex' }}
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-[var(--ink-primary)] relative pressable"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
               {bagCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    backgroundColor: '#fe8500',
-                    color: '#ffffff',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
+                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full bg-[var(--ink-primary)] text-white text-[10px] font-semibold tabular-nums flex items-center justify-center">
                   {bagCount}
                 </span>
               )}
@@ -584,298 +606,115 @@ export default function MobileProductPage() {
           </div>
         </header>
 
-        {/* Free Shipping & Returns Member Banner */}
-        <div
-          style={{
-            backgroundColor: '#f5f5f7',
-            padding: '8px 16px',
-            fontSize: '12px',
-            textAlign: 'center',
-            color: '#1d1d1f',
-            borderBottom: '1px solid #e5e5ea',
-            lineHeight: 1.3
-          }}
-        >
-          <span style={{ fontWeight: 600 }}>Free Standard Shipping</span> & 30-Day Free Returns
-        </div>
-
-        {/* 1. PRODUCT PHOTO SECTION (375px × 375px square container, #f5f5f7) */}
+        {/* 1. PRODUCT PHOTO SECTION (375px x 375px studio square) */}
         <section
-          style={{
-            width: '375px',
-            height: '375px',
-            position: 'relative',
-            backgroundColor: '#f5f5f7',
-            overflow: 'hidden'
-          }}
+          className="w-full aspect-square relative bg-[var(--surface-studio)] hairline-b overflow-hidden"
           aria-label="Product Gallery"
         >
-          {/* Badge: New Release & Colorway */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '12px',
-              left: '12px',
-              zIndex: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px'
-            }}
-          >
-            <span
-              style={{
-                backgroundColor: '#1d1d1f',
-                color: '#ffffff',
-                fontSize: '11px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                padding: '4px 8px',
-                borderRadius: '4px'
-              }}
-            >
-              Just In
-            </span>
-            <span
-              style={{
-                backgroundColor: '#d4ff00',
-                color: '#1d1d1f',
-                fontSize: '10px',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '0.4px',
-                padding: '2px 6px',
-                borderRadius: '4px'
-              }}
-            >
-              Volt Glow
-            </span>
-          </div>
+          <img
+            data-testid="main-photo"
+            src={images[currentImageIdx].src}
+            alt={images[currentImageIdx].label}
+            width={375}
+            height={375}
+            fetchPriority="high"
+            decoding="sync"
+            className="w-full h-full aspect-square object-cover -outline-offset-1 outline-1 outline-black/10"
+          />
 
-          {/* Product Image Display with Zero-Shift Bounding Box */}
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '16px'
-            }}
-          >
-            <img
-              data-testid="main-photo"
-              src={images[currentImageIdx].src}
-              alt={images[currentImageIdx].label}
-              width={375}
-              height={375}
-              style={{
-                width: '100%',
-                height: '100%',
-                aspectRatio: '1 / 1',
-                objectFit: 'contain',
-                transition: 'opacity 0.25s ease-in-out'
-              }}
-            />
-          </div>
-
-          {/* Interactive Pagination Dots / Thumbnail Switcher */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '12px',
-              left: 0,
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '8px',
-              zIndex: 10
-            }}
-          >
-            {images.map((img, idx) => (
-              <button
-                key={idx}
-                aria-label={`View photo ${idx + 1}`}
-                onClick={() => setCurrentImageIdx(idx)}
-                style={{
-                  width: idx === currentImageIdx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: idx === currentImageIdx ? '#1d1d1f' : '#d1d1d6',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease-in-out'
-                }}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* 2. PRODUCT NAME SECTION */}
-        <section style={{ padding: '16px 16px 4px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <p style={{ margin: '0 0 2px', fontSize: '13px', fontWeight: 600, color: '#0071e3', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Men&apos;s Road Running Shoes
-              </p>
-              <h1
-                style={{
-                  fontSize: '24px',
-                  fontWeight: 700,
-                  color: '#1d1d1f',
-                  margin: 0,
-                  lineHeight: 1.2
-                }}
-              >
-                Nike Pegasus 43
-              </h1>
+          {/* Gallery Controls: 44x44 accessible tap targets */}
+          <div className="absolute bottom-2 inset-x-4 flex items-center justify-between">
+            <span className="w-8" aria-hidden="true" />
+            <div className="flex items-center gap-2" role="tablist" aria-label="Product views">
+              {images.map((img, idx) => {
+                const isActive = idx === currentImageIdx;
+                return (
+                  <button
+                    key={img.src}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-label={`View photo ${idx + 1}`}
+                    onClick={() => setCurrentImageIdx(idx)}
+                    className="relative py-3 px-1 flex items-center justify-center cursor-pointer before:content-[''] before:absolute before:-inset-2"
+                  >
+                    <span
+                      className={`block h-[3px] rounded-full transition-all duration-200 ${
+                        isActive
+                          ? 'w-6 bg-[var(--ink-primary)]'
+                          : 'w-2.5 bg-black/20'
+                      }`}
+                    />
+                  </button>
+                );
+              })}
             </div>
+            <span className="w-8 text-right text-[11px] font-medium tabular-nums text-[var(--ink-secondary)]">
+              {currentImageIdx + 1} / {images.length}
+            </span>
           </div>
-          <p style={{ margin: '4px 0 0', fontSize: '14px', color: '#6e6e73' }}>
-            Black/White-Volt • Style: HV7521-001
-          </p>
         </section>
 
-        {/* 3. PRICE SECTION */}
-        <section style={{ padding: '0 16px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px', minHeight: '32px' }}>
+        {/* 2. PRODUCT HEADER & PRICE SECTION */}
+        <section className="px-4 pt-4 pb-3">
+          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--ink-secondary)]">
+            Men’s Road Running
+          </p>
+          <h1 className="font-display m-0 mt-1 text-[28px] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--ink-primary)] text-balance">
+            Nike Pegasus 43
+          </h1>
+          <div className="mt-1.5 flex items-center gap-2 text-[13px] text-[var(--ink-secondary)] tabular-nums">
+            <span
+              className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--accent-volt)] ring-1 ring-black/15 shrink-0"
+              aria-hidden="true"
+            />
+            <span>Black / White / Volt · HV7521-001</span>
+          </div>
+
+          <div className="mt-2.5 flex items-baseline justify-between min-h-[32px]">
             <p
               data-testid="price"
-              style={{
-                fontSize: '20px',
-                lineHeight: '28px',
-                minHeight: '28px',
-                fontWeight: 700,
-                color: '#1d1d1f',
-                margin: 0
-              }}
+              className="font-display m-0 text-[22px] font-semibold leading-[28px] min-h-[28px] tabular-nums text-[var(--ink-primary)]"
             >
-              $140.00
+              $140
             </p>
-            <span style={{ fontSize: '12px', color: '#6e6e73', lineHeight: '20px' }}>
-              or 4 interest-free payments of $35.00
+            <span className="text-[12px] text-[var(--ink-secondary)] tabular-nums">
+              Launches Dec 10
             </span>
           </div>
         </section>
 
-        {/* 4. SIZE SELECTOR BUTTONS (Above the Fold) */}
-        <section
-          style={{
-            padding: '0 16px',
-            marginBottom: '16px'
-          }}
-          aria-labelledby="size-selector-label"
-        >
-          {/* Section Header with Size Guide link */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '10px'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* 3. SIZE SELECTOR (Above the Fold) */}
+        <section className="px-4 pb-4" aria-labelledby="size-selector-label">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-baseline gap-1.5">
               <h2
                 id="size-selector-label"
-                style={{
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  color: '#1d1d1f',
-                  margin: 0
-                }}
+                className="m-0 text-[15px] font-semibold text-[var(--ink-primary)]"
               >
                 Select Size
               </h2>
               {selectedSize && (
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#fe8500' }}>
-                  ({selectedSize.size_label})
+                <span className="text-[13px] font-medium tabular-nums text-[var(--ink-secondary)]">
+                  · {selectedSize.size_label}
                 </span>
               )}
             </div>
 
             <button
+              ref={sizeGuideTriggerRef}
+              type="button"
               onClick={() => setShowSizeModal(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '4px 0',
-                color: '#6e6e73',
-                fontSize: '13px',
-                fontWeight: 500,
-                textDecoration: 'underline',
-                cursor: 'pointer'
-              }}
+              className="min-h-[44px] inline-flex items-center text-[13px] font-medium text-[var(--ink-secondary)] underline underline-offset-4 decoration-1 cursor-pointer"
             >
               Size Guide
             </button>
           </div>
 
-          {/* Validation Alert when Add to Bag is pressed without selecting a size */}
-          {showErrorAlert && (
-            <div
-              className="animate-wiggle"
-              style={{
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                color: '#b91c1c',
-                fontSize: '13px',
-                fontWeight: 500,
-                padding: '8px 12px',
-                borderRadius: '6px',
-                marginBottom: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>⚠️</span>
-              <span>Please select a size before adding to your bag.</span>
-            </div>
-          )}
-
-          {/* Low Stock Callout for selected size */}
-          {selectedSize && selectedSize.stock_status === 'low_stock' && (
-            <div
-              style={{
-                backgroundColor: '#fffbeb',
-                border: '1px solid #fcd34d',
-                color: '#92400e',
-                fontSize: '12px',
-                fontWeight: 600,
-                padding: '6px 10px',
-                borderRadius: '6px',
-                marginBottom: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              <span>⚡</span>
-              <span>Only {selectedSize.stock_quantity} pairs remaining in this size! Order soon.</span>
-            </div>
-          )}
-
-          {/* 
-            Size Buttons Container (Above-the-fold considerations):
-            - 2-row horizontal scroll container, keeping height ~120px with the first 7-8 sizes visible immediately!
-            - Scroll container for overflow sizes
-          */}
+          {/* 2-Row Horizontal Scroll Grid */}
           <div
             data-testid="size-grid"
-            className="size-scroll-container"
-            style={{
-              display: 'grid',
-              gridTemplateRows: 'repeat(2, 44px)',
-              gridAutoFlow: 'column',
-              gridAutoColumns: 'minmax(84px, 1fr)',
-              gap: '8px',
-              overflowX: 'auto',
-              paddingBottom: '8px',
-              WebkitOverflowScrolling: 'touch',
-              scrollSnapType: 'x mandatory'
-            }}
+            className="size-scroll-container grid grid-rows-[repeat(2,52px)] grid-flow-col auto-cols-[108px] gap-2 overflow-x-auto snap-x snap-proximity pb-1"
             role="radiogroup"
             aria-label="Available shoe sizes"
           >
@@ -884,108 +723,66 @@ export default function MobileProductPage() {
               const isSoldOut = !s.in_stock || s.stock_status === 'sold_out';
               const isLowStock = s.stock_status === 'low_stock';
 
-              // Visual styling matching size-buttons.md specifications:
-              // 1. in_stock: White (#FFFFFF), 1px solid #D1D5DB, Text #1F2937, 14px 500
-              // 2. low_stock: #FFFBEB, 1px solid #FCD34D, Text #92400E, "LOW STOCK" 10px
-              // 3. sold_out: #F3F4F6, 1px solid #E5E7EB, Text #6B7280, "SOLD OUT ⛔" 10px, disabled
-              // 4. picked: #FE8500 (Nike orange), 1px solid #FE8500, Text #FFFFFF, "SELECTED ✓" 10px
-              let bg = '#ffffff';
-              let border = '1px solid #D1D5DB';
-              let text = '#1F2937';
-
+              let stateClasses =
+                'bg-white border border-[var(--border-subtle)] text-[var(--ink-primary)] size-btn-available cursor-pointer';
               if (isSoldOut) {
-                bg = '#F3F4F6';
-                border = '1px solid #E5E7EB';
-                text = '#6B7280';
+                stateClasses =
+                  'bg-[var(--surface-muted)] border border-[oklch(0.92_0_0)] text-[var(--ink-disabled)] cursor-not-allowed';
               } else if (isPicked) {
-                bg = '#FE8500';
-                border = '1px solid #FE8500';
-                text = '#ffffff';
-              } else if (isLowStock) {
-                bg = '#FFFBEB';
-                border = '1px solid #FCD34D';
-                text = '#92400E';
+                stateClasses =
+                  'bg-[var(--ink-primary)] border border-[var(--ink-primary)] text-white cursor-pointer';
               }
 
               return (
                 <button
                   key={s.sku}
+                  type="button"
                   data-testid={isSoldOut ? 'size-button-sold-out' : 'size-button'}
                   role="radio"
                   aria-checked={isPicked}
                   aria-disabled={isSoldOut}
-                  aria-label={`Size ${s.size_label}, ${isSoldOut ? 'sold out' : isLowStock ? `low stock, ${s.stock_quantity} left` : 'in stock'}`}
+                  aria-label={`Size ${s.size_label}, ${
+                    isSoldOut
+                      ? 'sold out'
+                      : isLowStock
+                        ? `low stock, ${s.stock_quantity} left`
+                        : 'in stock'
+                  }`}
                   disabled={isSoldOut}
                   onClick={() => handleSelectSize(s)}
-                  style={{
-                    height: '44px',
-                    minWidth: '84px',
-                    borderRadius: '6px',
-                    border,
-                    background: bg,
-                    color: text,
-                    cursor: isSoldOut ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '2px 8px',
-                    boxShadow: isPicked ? '0 2px 6px rgba(254, 133, 0, 0.35)' : 'none',
-                    opacity: isSoldOut ? 0.75 : 1,
-                    transition: 'all 0.15s ease-in-out',
-                    scrollSnapAlign: 'start',
-                    userSelect: 'none'
-                  }}
+                  className={`w-[108px] h-[52px] rounded-lg flex flex-col items-center justify-center px-2 whitespace-nowrap tabular-nums snap-start pressable ${stateClasses}`}
                 >
                   <span
-                    style={{
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      lineHeight: 1.1
-                    }}
+                    className={`text-[13px] leading-none ${
+                      isSoldOut
+                        ? 'font-normal line-through'
+                        : isPicked
+                          ? 'font-semibold'
+                          : 'font-medium'
+                    }`}
                   >
                     {s.size_label}
                   </span>
 
                   {isSoldOut && (
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        fontWeight: 600,
-                        marginTop: '2px',
-                        letterSpacing: '0.2px',
-                        lineHeight: 1
-                      }}
-                    >
-                      SOLD OUT ⛔
+                    <span className="mt-1 text-[10px] leading-none">
+                      Sold out
                     </span>
                   )}
 
                   {!isSoldOut && isLowStock && !isPicked && (
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        fontWeight: 700,
-                        marginTop: '2px',
-                        letterSpacing: '0.2px',
-                        lineHeight: 1
-                      }}
-                    >
-                      LOW STOCK
+                    <span className="mt-1 text-[10px] font-medium leading-none text-[var(--status-low)] flex items-center gap-1">
+                      <span
+                        className="inline-block w-1 h-1 rounded-full bg-[var(--status-low)]"
+                        aria-hidden="true"
+                      />
+                      Few left
                     </span>
                   )}
 
-                  {!isSoldOut && isPicked && (
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        fontWeight: 700,
-                        marginTop: '2px',
-                        letterSpacing: '0.2px',
-                        lineHeight: 1
-                      }}
-                    >
-                      SELECTED ✓
+                  {!isSoldOut && isPicked && isLowStock && (
+                    <span className="mt-1 text-[10px] font-medium leading-none text-[var(--accent-volt)]">
+                      {s.stock_quantity} left
                     </span>
                   )}
                 </button>
@@ -993,332 +790,189 @@ export default function MobileProductPage() {
             })}
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-            <span style={{ fontSize: '11px', color: '#8e8e93' }}>← Swipe horizontally for all 26 sizes →</span>
-            <span style={{ fontSize: '11px', color: '#8e8e93' }}>US Men / US Women</span>
-          </div>
+          {/* Alerts placed below size-grid so they never shift the grid vertically */}
+          {showErrorAlert && (
+            <div
+              role="alert"
+              className="animate-wiggle mt-2.5 px-3 py-2 rounded-lg bg-[oklch(0.97_0.02_25)] border border-[oklch(0.88_0.06_25)] text-[var(--status-error)] text-[13px] font-medium flex items-center gap-2"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>Select a size to add to bag.</span>
+            </div>
+          )}
+
+          {selectedSize && selectedSize.stock_status === 'low_stock' && (
+            <div className="mt-2.5 px-3 py-2 rounded-lg bg-[oklch(0.975_0.02_75)] border border-[oklch(0.9_0.05_75)] text-[var(--status-low)] text-[12px] font-medium flex items-center gap-2 tabular-nums">
+              <span
+                className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--status-low)] shrink-0"
+                aria-hidden="true"
+              />
+              <span>Only {selectedSize.stock_quantity} left in {selectedSize.size_label}.</span>
+            </div>
+          )}
         </section>
 
-        {/* 5. ADD TO BAG & BUY NOW BUTTONS (Horizontal, side-by-side, equal width) */}
-        <section
-          style={{
-            padding: '0 16px',
-            marginBottom: '24px'
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              width: '100%'
-            }}
+        {/* 4. PRIMARY CTA */}
+        <section className="px-4 pb-6">
+          <button
+            type="button"
+            onClick={handleAddToBag}
+            className="cta-primary pressable w-full h-[52px] rounded-full bg-[var(--ink-primary)] text-white font-display text-[15px] font-semibold tracking-[-0.01em] flex items-center justify-center cursor-pointer"
           >
-            {/* Add to Bag Button:
-                Width: 50% (minus 6px gap)
-                Padding: 14px 16px
-                Font: 16px, Weight: 600
-                Border: 1px solid #0071e3
-                Background: #ffffff, Text: #0071e3
-                Hover: Bg #0071e3, Text #ffffff
-            */}
-            <button
-              onClick={handleAddToBag}
-              style={{
-                flex: 1,
-                padding: '14px 16px',
-                fontSize: '16px',
-                fontWeight: 600,
-                border: '1px solid #0071e3',
-                backgroundColor: '#ffffff',
-                color: '#0071e3',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s, color 0.2s, transform 0.1s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#0071e3';
-                e.currentTarget.style.color = '#ffffff';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#ffffff';
-                e.currentTarget.style.color = '#0071e3';
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              <span>Add to Bag</span>
-            </button>
-
-            {/* Buy Now Button:
-                Width: 50% (minus 6px gap)
-                Padding: 14px 16px
-                Font: 16px, Weight: 600
-                Border: None
-                Background: #0071e3, Text: #ffffff
-                Hover: Bg #005bb5
-            */}
-            <button
-              onClick={handleBuyNow}
-              style={{
-                flex: 1,
-                padding: '14px 16px',
-                fontSize: '16px',
-                fontWeight: 600,
-                border: 'none',
-                backgroundColor: '#0071e3',
-                color: '#ffffff',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s, transform 0.1s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#005bb5';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0071e3';
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              <span>Buy Now</span>
-            </button>
-          </div>
+            {selectedSize ? `Add to Bag — ${selectedSize.size_label}` : 'Add to Bag'}
+          </button>
+          <p className="m-0 mt-3 text-center text-[12px] text-[var(--ink-secondary)]">
+            Free standard shipping and 30-day returns.
+          </p>
         </section>
 
-        {/* 6. TECH SPECIFICATIONS SECTION */}
+        {/* 5. PRODUCT SPECIFICATIONS */}
         <section
-          style={{
-            margin: '0 16px 20px',
-            borderTop: '1px solid #e5e5ea',
-            paddingTop: '16px'
-          }}
+          className="px-4 pt-5 pb-8 hairline-t"
           aria-labelledby="tech-specs-heading"
         >
           <h2
             id="tech-specs-heading"
-            style={{
-              fontSize: '18px',
-              fontWeight: 600,
-              color: '#1d1d1f',
-              margin: '0 0 12px'
-            }}
+            className="font-display m-0 mb-3 text-[16px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]"
           >
-            Tech Specifications
+            Specifications
           </h2>
 
-          <ul
-            style={{
-              margin: 0,
-              paddingLeft: '20px',
-              color: '#1d1d1f',
-              fontSize: '14px',
-              lineHeight: 1.8
-            }}
-          >
-            <li><strong>Color:</strong> Black/White-Volt</li>
-            <li><strong>Style:</strong> HV7521-001</li>
-            <li><strong>Material:</strong> Engineered mesh upper with synthetic overlays</li>
-            <li><strong>Midsole:</strong> Nike React foam for responsive cushioning</li>
-            <li><strong>Outsole:</strong> Waffle-inspired rubber tread for traction</li>
-            <li><strong>Fit:</strong> Standard fit, true to size</li>
-            <li><strong>Weight:</strong> Approx. 260g (Men&apos;s size 9)</li>
-          </ul>
-        </section>
-
-        {/* 7. CUSTOMER REVIEWS SECTION */}
-        <section
-          style={{
-            margin: '0 16px 28px',
-            borderTop: '1px solid #e5e5ea',
-            paddingTop: '16px'
-          }}
-          aria-labelledby="customer-reviews-heading"
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <h2
-              id="customer-reviews-heading"
-              style={{
-                fontSize: '18px',
-                fontWeight: 600,
-                color: '#1d1d1f',
-                margin: 0
-              }}
-            >
-              Customer Reviews
-            </h2>
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#0071e3',
-                fontSize: '13px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              Write a Review
-            </button>
-          </div>
-
-          {/* Rating Summary: ★★★★☆ 4.8 (524 reviews), stars in #ffd700 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#ffd700', fontSize: '18px', letterSpacing: '2px' }} aria-label="4.8 out of 5 stars">
-              ★★★★☆
-            </span>
-            <span style={{ fontSize: '16px', fontWeight: 700, color: '#1d1d1f' }}>4.8</span>
-            <span style={{ fontSize: '14px', color: '#6e6e73' }}>(524 reviews)</span>
-          </div>
-
-          {/* Sample Review 1 */}
-          <div
-            style={{
-              padding: '12px',
-              backgroundColor: '#f9f9fb',
-              borderRadius: '8px',
-              marginBottom: '12px'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#1d1d1f' }}>sarah.m@example.com</span>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>November 15, 2026</span>
-            </div>
-            <div style={{ color: '#ffd700', fontSize: '13px', marginBottom: '4px' }}>★★★★★</div>
-            <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3c', lineHeight: 1.5 }}>
-              These shoes are amazing! The cushioning is incredible and they look great. Perfect for daily runs.
-            </p>
-          </div>
-
-          {/* Sample Review 2 */}
-          <div
-            style={{
-              padding: '12px',
-              backgroundColor: '#f9f9fb',
-              borderRadius: '8px'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#1d1d1f' }}>john.d@example.com</span>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>November 12, 2026</span>
-            </div>
-            <div style={{ color: '#ffd700', fontSize: '13px', marginBottom: '4px' }}>★★★★☆</div>
-            <p style={{ margin: 0, fontSize: '13px', color: '#3a3a3c', lineHeight: 1.5 }}>
-              Comfortable fit and true to size. The color is exactly as pictured. Will definitely buy again.
-            </p>
-          </div>
+          <dl className="m-0">
+            {PRODUCT_SPECS.map((spec, idx) => (
+              <div
+                key={spec.label}
+                className={`py-2.5 flex items-baseline justify-between gap-4 text-[13px] ${
+                  idx < PRODUCT_SPECS.length - 1 ? 'hairline-b' : ''
+                }`}
+              >
+                <dt className="text-[var(--ink-secondary)] shrink-0">{spec.label}</dt>
+                <dd
+                  className={`m-0 text-right text-[var(--ink-primary)] font-medium ${
+                    spec.tabular ? 'tabular-nums' : ''
+                  }`}
+                >
+                  {spec.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* Toast Notification */}
         {showToast && (
           <div
-            style={{
-              position: 'fixed',
-              bottom: '24px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              backgroundColor: '#1d1d1f',
-              color: '#ffffff',
-              padding: '12px 20px',
-              borderRadius: '30px',
-              fontSize: '14px',
-              fontWeight: 500,
-              boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
-              zIndex: 50,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              whiteSpace: 'nowrap'
-            }}
+            role="status"
+            aria-live="polite"
+            style={{ bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}
+            className="fixed left-1/2 -translate-x-1/2 bg-[var(--ink-primary)] text-white px-4 py-3 rounded-full text-[13px] font-medium shadow-[0_8px_24px_rgb(0_0_0/0.22)] z-50 flex items-center gap-2 whitespace-nowrap tabular-nums"
           >
-            <span>✓</span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--accent-volt)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
             <span>{showToast}</span>
           </div>
         )}
 
-        {/* Size Guide Modal */}
+        {/* Accessible Size Guide Modal */}
         {showSizeModal && (
           <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 100,
-              padding: '16px'
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) handleCloseSizeModal();
             }}
           >
             <div
-              style={{
-                backgroundColor: '#ffffff',
-                borderRadius: '12px',
-                width: '100%',
-                maxWidth: '350px',
-                padding: '20px',
-                maxHeight: '80vh',
-                overflowY: 'auto'
-              }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="size-guide-title"
+              className="bg-[var(--surface-page)] rounded-2xl w-full max-w-[343px] p-5 max-h-[80dvh] flex flex-col shadow-[0_16px_48px_rgb(0_0_0/0.2)]"
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>Size Guide</h3>
-                <button
-                  onClick={() => setShowSizeModal(false)}
-                  style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: '4px' }}
+              <div className="flex items-center justify-between mb-3">
+                <h3
+                  id="size-guide-title"
+                  className="font-display m-0 text-[18px] font-bold tracking-[-0.02em] text-[var(--ink-primary)]"
                 >
-                  ✕
+                  Size Guide
+                </h3>
+                <button
+                  ref={modalCloseRef}
+                  type="button"
+                  aria-label="Close size guide"
+                  onClick={handleCloseSizeModal}
+                  className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center rounded-full text-[var(--ink-primary)] cursor-pointer pressable"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
               </div>
-              <p style={{ fontSize: '13px', color: '#6e6e73', marginBottom: '16px' }}>
-                Nike Pegasus 43 fits true to size. For runners with wider feet, we suggest going up half a size.
+
+              <p className="m-0 mb-4 text-[13px] leading-[1.5] text-[var(--ink-secondary)] text-pretty">
+                Nike Pegasus 43 fits true to size. Runners with wider feet may prefer half a size up.
               </p>
-              <table style={{ width: '100%', fontSize: '12px', textAlign: 'left', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '2px solid #e5e5ea', color: '#1d1d1f' }}>
-                    <th style={{ padding: '6px 4px' }}>US Men</th>
-                    <th style={{ padding: '6px 4px' }}>US Women</th>
-                    <th style={{ padding: '6px 4px' }}>EU</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sizes.slice(0, 10).map((s) => (
-                    <tr key={s.sku} style={{ borderBottom: '1px solid #f0f0f2' }}>
-                      <td style={{ padding: '6px 4px' }}>M {s.size_us_men}</td>
-                      <td style={{ padding: '6px 4px' }}>W {s.size_us_women}</td>
-                      <td style={{ padding: '6px 4px' }}>{s.size_eu}</td>
+
+              <div className="overflow-y-auto overscroll-contain flex-1">
+                <table className="w-full text-[12px] text-left border-collapse tabular-nums">
+                  <thead>
+                    <tr className="hairline-b text-[var(--ink-secondary)]">
+                      <th className="py-2 font-medium">US Men</th>
+                      <th className="py-2 font-medium">US Women</th>
+                      <th className="py-2 font-medium">EU</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {sizes.slice(0, 10).map((s) => (
+                      <tr key={s.sku} className="hairline-b text-[var(--ink-primary)]">
+                        <td className="py-2">M {s.size_us_men}</td>
+                        <td className="py-2">W {s.size_us_women}</td>
+                        <td className="py-2">{s.size_eu}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
               <button
-                onClick={() => setShowSizeModal(false)}
-                style={{
-                  width: '100%',
-                  marginTop: '16px',
-                  padding: '10px',
-                  backgroundColor: '#1d1d1f',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer'
-                }}
+                type="button"
+                onClick={handleCloseSizeModal}
+                className="cta-primary pressable w-full h-[44px] mt-4 rounded-lg bg-[var(--ink-primary)] text-white font-semibold text-[14px] cursor-pointer"
               >
                 Close
               </button>

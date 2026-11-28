@@ -94,3 +94,23 @@ A mobile phone screenshot emulating an iPhone 375 × 812 CSS px viewport at 3x d
   - **Best Practices**: **`100`**
   - **SEO**: **`100`**
   - **Full Reports Saved**: [`lighthouse-report.json`](./lighthouse-report.json) and [`reports/lighthouse-mobile-report.html`](./reports/lighthouse-mobile-report.html).
+
+---
+
+## 5. `/emil-unslop-design` Redesign Pass
+
+Applied the `/emil-unslop-design` workflow (plus `emil-color`, `emil-typography`, `emil-surfaces`, `emil-mobile-native`, and `emil-touch-and-accessibility`):
+
+- **What was stripped**:
+  - Removed the top gray shipping banner above the gallery, floating `"JUST IN"` / `"VOLT GLOW"` badges over the product photo, and the noisy swipe hint caption below the size grid.
+  - Removed all generic `#0071e3` blue CTAs, `#FE8500` orange shadow glows, `#ffd700` review stars, all emojis (`⛔`, `⚠️`, `⚡`, `✓`, `★★★★☆`), and fabricated customer reviews (`sarah.m@example.com`, `john.d@example.com`).
+  - Replaced the competing twin 50/50 CTA buttons with one clear primary Obsidian pill CTA (`Add to Bag`).
+  - Removed `maximumScale: 1` / `userScalable: false` WCAG zoom lockouts from `layout.tsx` viewport metadata.
+- **Product-derived point of view**:
+  - **Real Studio Product Photography**: Replaced vector shoe SVGs with two 750×750 `.webp` studio photographs (`pegasus-43-side.webp` at 23 KB and `pegasus-43-top.webp` at 28 KB) on a matching `--surface-studio` backdrop with `1px` inset `outline-black/10`.
+  - **OKLCH Black / White / Volt Palette**: Derived `--surface-*`, `--ink-*`, `--border-hairline` (`0.5px` on retina), and `--accent-volt` (`oklch(0.905 0.21 124)`) directly from the Black/White-Volt shoe.
+  - **Typography**: Self-hosted `Space Grotesk` (`next/font/google`, `.woff2`) for display/price hierarchy with `font-synthesis: none` and `tabular-nums`, keeping `<p data-testid="price">` locked at `min-height: 28px; line-height: 28px` inside a `min-height: 32px` wrapper.
+  - **Mobile-Native & Touch**: 108 × 52 px single-line size buttons (`>= 44px` hit targets), `touch-action: manipulation`, `-webkit-tap-highlight-color: transparent`, `:hover` gated behind `@media (hover: hover) and (pointer: fine)`, `:active` press scale (`0.98`), and an accessible `role="dialog"` Size Guide modal with Escape & focus restoration.
+- **Updated Slow 4G Mobile Lighthouse Results**:
+  - **Performance**: **`99 / 100`** | **Accessibility**: **`96 / 100`** | **Best Practices**: **`100 / 100`** | **SEO**: **`100 / 100`**
+  - **FCP**: **`0.8 s`** | **LCP**: **`2.3 s`** | **TBT**: **`50 ms`** | **CLS**: **`0.000`** | **Speed Index**: **`1.0 s`**
