@@ -83,7 +83,7 @@ A mobile phone screenshot emulating an iPhone 375 × 812 CSS px viewport at 3x d
 - **Vercel & CI Integration**:
   - Configured root `vercel.json` and root `package.json` for mono-repo builds.
   - Added `.github/workflows/lighthouse-ci.yml` and `.lighthouserc.json` enforcing the Slow 4G profile on every push.
-  - Live Vercel Deployment: `https://fleet-iodine-voql7zp.tmp.now` (Claim link: `https://vercel.com/claim-deployment?code=9fdb3026-20e0-438d-a550-cb23fd841cbf`).
+  - Live Vercel Deployment: `https://nike-size-run-mu.vercel.app` (connected to `digitaleye-ux/Nike-Size-Run` on Vercel).
 - **Mobile Lighthouse Audit Results (Slow 4G Throttling)**:
   - **Performance Score**: **`99 / 100`** *(passes `performance_score_min: 90`)*
   - **Cumulative Layout Shift (CLS)**: **`0.000`** *(passes `size_grid_shift_px_max: 0`)*

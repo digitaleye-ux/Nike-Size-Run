@@ -1,8 +1,8 @@
-https://fleet-iodine-voql7zp.tmp.now
+https://nike-size-run-mu.vercel.app
 
 # Nike: Size Run
 
-Live Vercel URL: https://fleet-iodine-voql7zp.tmp.now
+Live Vercel URL: https://nike-size-run-mu.vercel.app
 
 A mobile product page project for Nike size run data.
 
@@ -10,7 +10,7 @@ A mobile product page project for Nike size run data.
 
 This project implements the mobile product page (375px width) for the **Nike Pegasus 43** (Style HV7521-001, Black/White-Volt) under the Web Platform Slow 4G Mobile Check Profile.
 
-- **Live URL**: https://fleet-iodine-voql7zp.tmp.now
+- **Live URL**: https://nike-size-run-mu.vercel.app
 - **Framework**: Next.js 16 (App Router)
 - **Data Source**: `Pegasus Size and Stock Snapshot, 8 December 2026.json` (26 size options)
 - **Performance Budget**: Enforced via `speed-budget.json` (Performance $\ge$ 90, CLS = 0, touch targets $\ge$ 44px)

@@ -1,10 +1,8 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm run start --prefix products/pegasus-43-nextjs",
-      "startServerReadyPattern": "Ready in",
       "url": [
-        "http://localhost:3000/"
+        "https://nike-size-run-mu.vercel.app/"
       ],
       "numberOfRuns": 3,
       "settings": {
