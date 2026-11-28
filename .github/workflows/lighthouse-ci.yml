@@ -21,6 +21,9 @@ jobs:
           cache: npm
           cache-dependency-path: products/pegasus-43-nextjs/package-lock.json
 
+      - name: Verify 8 Dec Snapshot Parity
+        run: node scripts/verify-sizes-snapshot.mjs
+
       - name: Install dependencies
         run: cd products/pegasus-43-nextjs && npm ci
 
