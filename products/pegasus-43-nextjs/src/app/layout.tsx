@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-space-grotesk",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Nike Pegasus 43 — Black / White-Volt | Nike",
+  title: "Nike Pegasus 43 Men's Road Running Shoes. Nike.com",
   description:
-    "Men's Road Running Shoes. Nike Pegasus 43 in Black/White-Volt (HV7521-001) with Nike React foam cushioning and engineered mesh upper.",
+    "Shop the Nike Pegasus 43 in Black/White-Volt (HV7521-001). Responsive Nike React foam cushioning and breathable engineered mesh.",
   keywords: ["Nike Pegasus 43", "running shoes", "Nike React", "HV7521-001"],
 };
 
@@ -30,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} h-full antialiased`}>
-      <body className="min-h-dvh bg-white sm:bg-[var(--surface-canvas)] text-[var(--ink-primary)]">
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <body className="min-h-dvh bg-[#ffffff] text-[#111111]">
         {children}
       </body>
     </html>

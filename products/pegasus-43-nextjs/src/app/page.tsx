@@ -455,6 +455,8 @@ export default function MobileProductPage() {
   const [pickedSku, setPickedSku] = useState<string | null>(null);
   const [currentImageIdx, setCurrentImageIdx] = useState<number>(0);
   const [bagCount, setBagCount] = useState<number>(0);
+  const [isFavorited, setIsFavorited] = useState<boolean>(false);
+  const [openDisclosure, setOpenDisclosure] = useState<'details' | 'shipping' | null>('details');
   const [showToast, setShowToast] = useState<string | null>(null);
   const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
   const [showSizeModal, setShowSizeModal] = useState<boolean>(false);
@@ -522,15 +524,27 @@ export default function MobileProductPage() {
     setShowErrorAlert(false);
   };
 
+  const triggerToast = (msg: string) => {
+    setShowToast(msg);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setShowToast(null), 3200);
+  };
+
   const handleAddToBag = () => {
     if (!selectedSize) {
       setShowErrorAlert(true);
       return;
     }
     setBagCount((prev) => prev + 1);
-    setShowToast(`Added ${selectedSize.size_label} to Bag`);
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setShowToast(null), 3200);
+    triggerToast(`Added ${selectedSize.size_label} to Bag`);
+  };
+
+  const handleToggleFavorite = () => {
+    setIsFavorited((prev) => {
+      const next = !prev;
+      triggerToast(next ? 'Saved to Favorites' : 'Removed from Favorites');
+      return next;
+    });
   };
 
   const handleCloseSizeModal = () => {
@@ -539,14 +553,15 @@ export default function MobileProductPage() {
   };
 
   return (
-    <div className="w-full flex justify-center bg-white sm:bg-[var(--surface-canvas)] sm:px-4 sm:py-6">
-      <main className="w-full max-w-[375px] bg-[var(--surface-page)] sm:rounded-2xl sm:shadow-[0_0_0_1px_rgb(0_0_0/0.06),0_12px_32px_-8px_rgb(0_0_0/0.08)] overflow-hidden flex flex-col relative">
-        {/* Sticky Mobile Header */}
-        <header className="h-[52px] px-4 flex items-center justify-between bg-[var(--surface-page)] hairline-b sticky top-0 z-30">
-          <div className="flex items-center text-[var(--ink-primary)]" aria-label="Nike">
+    <div className="w-full flex justify-center bg-[#ffffff]">
+      {/* Flat 375px Nike Mobile PDP (zero drop shadows, zero rounded outer frame per DESIGN.md) */}
+      <main className="w-full max-w-[375px] bg-[#ffffff] flex flex-col relative">
+        {/* Primary Nav (56px height, inset #e5e5e5 bottom hairline) */}
+        <header className="h-[56px] px-4 flex items-center justify-between bg-[#ffffff] nike-sticky-hairline sticky top-0 z-30">
+          <div className="flex items-center text-[#111111]" aria-label="Nike">
             <svg
-              width="52"
-              height="19"
+              width="54"
+              height="20"
               viewBox="0 0 69 24"
               fill="currentColor"
               aria-hidden="true"
@@ -555,19 +570,19 @@ export default function MobileProductPage() {
             </svg>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               aria-label="Search"
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-[var(--ink-primary)] pressable"
+              className="w-[40px] h-[40px] rounded-full bg-[#f5f5f5] flex items-center justify-center text-[#111111] relative before:content-[''] before:absolute before:-inset-0.5 nike-pressable cursor-pointer"
             >
               <svg
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.75"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
@@ -580,15 +595,15 @@ export default function MobileProductPage() {
             <button
               type="button"
               aria-label={`Shopping Bag, ${bagCount} items`}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-[var(--ink-primary)] relative pressable"
+              className="w-[40px] h-[40px] rounded-full bg-[#f5f5f5] flex items-center justify-center text-[#111111] relative before:content-[''] before:absolute before:-inset-0.5 nike-pressable cursor-pointer"
             >
               <svg
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.75"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
@@ -598,7 +613,7 @@ export default function MobileProductPage() {
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
               {bagCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full bg-[var(--ink-primary)] text-white text-[10px] font-semibold tabular-nums flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-[#111111] text-[#ffffff] text-[10px] font-medium tabular-nums flex items-center justify-center">
                   {bagCount}
                 </span>
               )}
@@ -606,9 +621,9 @@ export default function MobileProductPage() {
           </div>
         </header>
 
-        {/* 1. PRODUCT PHOTO SECTION (375px x 375px studio square) */}
+        {/* 1. PRODUCT PHOTOGRAPH (Full-bleed 1:1 square on #f5f5f5 Soft Cloud, rounded-none) */}
         <section
-          className="w-full aspect-square relative bg-[var(--surface-studio)] hairline-b overflow-hidden"
+          className="w-full aspect-square relative bg-[#f5f5f5] overflow-hidden"
           aria-label="Product Gallery"
         >
           <img
@@ -619,99 +634,84 @@ export default function MobileProductPage() {
             height={375}
             fetchPriority="high"
             decoding="sync"
-            className="w-full h-full aspect-square object-cover -outline-offset-1 outline-1 outline-black/10"
+            className="w-full h-full aspect-square object-cover"
           />
 
-          {/* Gallery Controls: 44x44 accessible tap targets */}
-          <div className="absolute bottom-2 inset-x-4 flex items-center justify-between">
-            <span className="w-8" aria-hidden="true" />
-            <div className="flex items-center gap-2" role="tablist" aria-label="Product views">
-              {images.map((img, idx) => {
-                const isActive = idx === currentImageIdx;
-                return (
-                  <button
-                    key={img.src}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    aria-label={`View photo ${idx + 1}`}
-                    onClick={() => setCurrentImageIdx(idx)}
-                    className="relative py-3 px-1 flex items-center justify-center cursor-pointer before:content-[''] before:absolute before:-inset-2"
-                  >
-                    <span
-                      className={`block h-[3px] rounded-full transition-all duration-200 ${
-                        isActive
-                          ? 'w-6 bg-[var(--ink-primary)]'
-                          : 'w-2.5 bg-black/20'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-            </div>
-            <span className="w-8 text-right text-[11px] font-medium tabular-nums text-[var(--ink-secondary)]">
-              {currentImageIdx + 1} / {images.length}
-            </span>
+          {/* Bottom-right circular carousel paddles (button-icon-circular) */}
+          <div className="absolute bottom-3 right-3 flex items-center gap-2">
+            {images.map((img, idx) => {
+              const isActive = idx === currentImageIdx;
+              return (
+                <button
+                  key={img.src}
+                  type="button"
+                  aria-label={`View photo ${idx + 1}`}
+                  aria-pressed={isActive}
+                  onClick={() => setCurrentImageIdx(idx)}
+                  className={`h-[28px] px-3 rounded-full text-[12px] font-medium tabular-nums relative before:content-[''] before:absolute before:-inset-2 nike-pressable cursor-pointer ${
+                    isActive
+                      ? 'bg-[#111111] text-[#ffffff]'
+                      : 'bg-[#ffffff] text-[#111111] border border-[#cacacb]'
+                  }`}
+                >
+                  {idx + 1}
+                </button>
+              );
+            })}
           </div>
         </section>
 
-        {/* 2. PRODUCT HEADER & PRICE SECTION */}
+        {/* 2. PRODUCT HEADER, PRICE & COLORWAY SWATCH */}
         <section className="px-4 pt-4 pb-3">
-          <p className="m-0 text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--ink-secondary)]">
-            Men’s Road Running
-          </p>
-          <h1 className="font-display m-0 mt-1 text-[28px] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--ink-primary)] text-balance">
+          <h1 className="m-0 text-[24px] font-medium leading-[1.2] text-[#111111]">
             Nike Pegasus 43
           </h1>
-          <div className="mt-1.5 flex items-center gap-2 text-[13px] text-[var(--ink-secondary)] tabular-nums">
-            <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--accent-volt)] ring-1 ring-black/15 shrink-0"
-              aria-hidden="true"
-            />
-            <span>Black / White / Volt · HV7521-001</span>
-          </div>
+          <p className="m-0 mt-1 text-[14px] font-medium leading-[1.5] text-[#707072]">
+            Men&apos;s Road Running Shoes
+          </p>
 
-          <div className="mt-2.5 flex items-baseline justify-between min-h-[32px]">
+          <div className="mt-2 flex items-baseline justify-between min-h-[32px]">
             <p
               data-testid="price"
-              className="font-display m-0 text-[22px] font-semibold leading-[28px] min-h-[28px] tabular-nums text-[var(--ink-primary)]"
+              className="m-0 text-[16px] font-medium leading-[28px] min-h-[28px] tabular-nums text-[#111111]"
             >
               $140
             </p>
-            <span className="text-[12px] text-[var(--ink-secondary)] tabular-nums">
+            <span className="text-[12px] font-medium text-[#707072] tabular-nums">
               Launches Dec 10
             </span>
           </div>
+
+          {/* Nike Swatch Dot Active (concentric ring) */}
+          <div className="mt-2 flex items-center gap-2.5 text-[14px] text-[#707072]">
+            <span
+              className="inline-block w-[12px] h-[12px] rounded-full bg-[#111111] ring-2 ring-[#ffffff] shadow-[0_0_0_3.5px_#111111] shrink-0 ml-0.5"
+              aria-hidden="true"
+            />
+            <span>Black / White-Volt · HV7521-001</span>
+          </div>
         </section>
 
-        {/* 3. SIZE SELECTOR (Above the Fold) */}
-        <section className="px-4 pb-4" aria-labelledby="size-selector-label">
+        {/* 3. SIZE SELECTOR (2-Row Horizontal Scroll Grid, >= 44px buttons) */}
+        <section className="px-4 pt-2 pb-4" aria-labelledby="size-selector-label">
           <div className="flex items-center justify-between mb-1.5">
-            <div className="flex items-baseline gap-1.5">
-              <h2
-                id="size-selector-label"
-                className="m-0 text-[15px] font-semibold text-[var(--ink-primary)]"
-              >
-                Select Size
-              </h2>
-              {selectedSize && (
-                <span className="text-[13px] font-medium tabular-nums text-[var(--ink-secondary)]">
-                  · {selectedSize.size_label}
-                </span>
-              )}
-            </div>
+            <h2
+              id="size-selector-label"
+              className="m-0 text-[16px] font-medium leading-[1.5] text-[#111111]"
+            >
+              Select Size
+            </h2>
 
             <button
               ref={sizeGuideTriggerRef}
               type="button"
               onClick={() => setShowSizeModal(true)}
-              className="min-h-[44px] inline-flex items-center text-[13px] font-medium text-[var(--ink-secondary)] underline underline-offset-4 decoration-1 cursor-pointer"
+              className="min-h-[44px] inline-flex items-center text-[14px] font-medium text-[#707072] underline underline-offset-4 cursor-pointer"
             >
               Size Guide
             </button>
           </div>
 
-          {/* 2-Row Horizontal Scroll Grid */}
           <div
             data-testid="size-grid"
             className="size-scroll-container grid grid-rows-[repeat(2,52px)] grid-flow-col auto-cols-[108px] gap-2 overflow-x-auto snap-x snap-proximity pb-1"
@@ -724,13 +724,13 @@ export default function MobileProductPage() {
               const isLowStock = s.stock_status === 'low_stock';
 
               let stateClasses =
-                'bg-white border border-[var(--border-subtle)] text-[var(--ink-primary)] size-btn-available cursor-pointer';
+                'bg-[#ffffff] border border-[#cacacb] text-[#111111] nike-size-available cursor-pointer';
               if (isSoldOut) {
                 stateClasses =
-                  'bg-[var(--surface-muted)] border border-[oklch(0.92_0_0)] text-[var(--ink-disabled)] cursor-not-allowed';
+                  'bg-[#f5f5f5] border border-[#e5e5e5] text-[#9e9ea0] cursor-not-allowed';
               } else if (isPicked) {
                 stateClasses =
-                  'bg-[var(--ink-primary)] border border-[var(--ink-primary)] text-white cursor-pointer';
+                  'bg-[#111111] border border-[#111111] text-[#ffffff] cursor-pointer';
               }
 
               return (
@@ -750,15 +750,11 @@ export default function MobileProductPage() {
                   }`}
                   disabled={isSoldOut}
                   onClick={() => handleSelectSize(s)}
-                  className={`w-[108px] h-[52px] rounded-lg flex flex-col items-center justify-center px-2 whitespace-nowrap tabular-nums snap-start pressable ${stateClasses}`}
+                  className={`w-[108px] h-[52px] rounded-[6px] flex flex-col items-center justify-center px-2 whitespace-nowrap tabular-nums snap-start nike-pressable ${stateClasses}`}
                 >
                   <span
-                    className={`text-[13px] leading-none ${
-                      isSoldOut
-                        ? 'font-normal line-through'
-                        : isPicked
-                          ? 'font-semibold'
-                          : 'font-medium'
+                    className={`text-[14px] leading-none ${
+                      isSoldOut ? 'font-normal line-through' : 'font-medium'
                     }`}
                   >
                     {s.size_label}
@@ -771,17 +767,13 @@ export default function MobileProductPage() {
                   )}
 
                   {!isSoldOut && isLowStock && !isPicked && (
-                    <span className="mt-1 text-[10px] font-medium leading-none text-[var(--status-low)] flex items-center gap-1">
-                      <span
-                        className="inline-block w-1 h-1 rounded-full bg-[var(--status-low)]"
-                        aria-hidden="true"
-                      />
+                    <span className="mt-1 text-[10px] font-medium leading-none text-[#d30005]">
                       Few left
                     </span>
                   )}
 
                   {!isSoldOut && isPicked && isLowStock && (
-                    <span className="mt-1 text-[10px] font-medium leading-none text-[var(--accent-volt)]">
+                    <span className="mt-1 text-[10px] font-medium leading-none text-[#e5e5e5]">
                       {s.stock_quantity} left
                     </span>
                   )}
@@ -790,89 +782,145 @@ export default function MobileProductPage() {
             })}
           </div>
 
-          {/* Alerts placed below size-grid so they never shift the grid vertically */}
           {showErrorAlert && (
             <div
               role="alert"
-              className="animate-wiggle mt-2.5 px-3 py-2 rounded-lg bg-[oklch(0.97_0.02_25)] border border-[oklch(0.88_0.06_25)] text-[var(--status-error)] text-[13px] font-medium flex items-center gap-2"
+              className="animate-wiggle mt-2.5 px-3 py-2.5 rounded-[6px] bg-[#ffffff] border border-[#d30005] text-[#d30005] text-[14px] font-medium"
             >
+              Please select a size.
+            </div>
+          )}
+
+          {selectedSize && selectedSize.stock_status === 'low_stock' && (
+            <p className="m-0 mt-2 text-[12px] font-medium text-[#d30005] tabular-nums">
+              Just a few left ({selectedSize.stock_quantity} remaining in {selectedSize.size_label}).
+            </p>
+          )}
+        </section>
+
+        {/* 4. CTA STACK (button-primary + button-secondary pill buttons per DESIGN.md) */}
+        <section className="px-4 pb-6 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={handleAddToBag}
+            className="nike-btn-primary nike-pressable w-full h-[52px] px-8 rounded-full bg-[#111111] text-[#ffffff] text-[16px] font-medium leading-[1.5] flex items-center justify-center cursor-pointer"
+          >
+            {selectedSize ? `Add to Bag — ${selectedSize.size_label}` : 'Add to Bag'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleToggleFavorite}
+            aria-pressed={isFavorited}
+            className="nike-btn-secondary nike-pressable w-full h-[52px] px-8 rounded-full bg-[#f5f5f5] text-[#111111] text-[16px] font-medium leading-[1.5] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>{isFavorited ? 'Favorited' : 'Favorite'}</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={isFavorited ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+        </section>
+
+        {/* 5. PDP DISCLOSURE ROWS (pdp-disclosure-row per DESIGN.md) */}
+        <section className="px-4 pb-6" aria-label="Product Information">
+          {/* Row 1: View Product Details */}
+          <div className="border-t border-[#cacacb]">
+            <button
+              type="button"
+              aria-expanded={openDisclosure === 'details'}
+              onClick={() =>
+                setOpenDisclosure(openDisclosure === 'details' ? null : 'details')
+              }
+              className="w-full py-5 flex items-center justify-between text-left text-[16px] font-medium text-[#111111] cursor-pointer"
+            >
+              <span>View Product Details</span>
               <svg
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="shrink-0"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <span>Select a size to add to bag.</span>
-            </div>
-          )}
-
-          {selectedSize && selectedSize.stock_status === 'low_stock' && (
-            <div className="mt-2.5 px-3 py-2 rounded-lg bg-[oklch(0.975_0.02_75)] border border-[oklch(0.9_0.05_75)] text-[var(--status-low)] text-[12px] font-medium flex items-center gap-2 tabular-nums">
-              <span
-                className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--status-low)] shrink-0"
-                aria-hidden="true"
-              />
-              <span>Only {selectedSize.stock_quantity} left in {selectedSize.size_label}.</span>
-            </div>
-          )}
-        </section>
-
-        {/* 4. PRIMARY CTA */}
-        <section className="px-4 pb-6">
-          <button
-            type="button"
-            onClick={handleAddToBag}
-            className="cta-primary pressable w-full h-[52px] rounded-full bg-[var(--ink-primary)] text-white font-display text-[15px] font-semibold tracking-[-0.01em] flex items-center justify-center cursor-pointer"
-          >
-            {selectedSize ? `Add to Bag — ${selectedSize.size_label}` : 'Add to Bag'}
-          </button>
-          <p className="m-0 mt-3 text-center text-[12px] text-[var(--ink-secondary)]">
-            Free standard shipping and 30-day returns.
-          </p>
-        </section>
-
-        {/* 5. PRODUCT SPECIFICATIONS */}
-        <section
-          className="px-4 pt-5 pb-8 hairline-t"
-          aria-labelledby="tech-specs-heading"
-        >
-          <h2
-            id="tech-specs-heading"
-            className="font-display m-0 mb-3 text-[16px] font-semibold tracking-[-0.01em] text-[var(--ink-primary)]"
-          >
-            Specifications
-          </h2>
-
-          <dl className="m-0">
-            {PRODUCT_SPECS.map((spec, idx) => (
-              <div
-                key={spec.label}
-                className={`py-2.5 flex items-baseline justify-between gap-4 text-[13px] ${
-                  idx < PRODUCT_SPECS.length - 1 ? 'hairline-b' : ''
+                className={`transition-transform duration-200 ${
+                  openDisclosure === 'details' ? 'rotate-180' : ''
                 }`}
+                aria-hidden="true"
               >
-                <dt className="text-[var(--ink-secondary)] shrink-0">{spec.label}</dt>
-                <dd
-                  className={`m-0 text-right text-[var(--ink-primary)] font-medium ${
-                    spec.tabular ? 'tabular-nums' : ''
-                  }`}
-                >
-                  {spec.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {openDisclosure === 'details' && (
+              <dl className="m-0 pb-5 space-y-2.5 text-[14px]">
+                {PRODUCT_SPECS.map((spec) => (
+                  <div key={spec.label} className="flex items-baseline justify-between gap-4">
+                    <dt className="text-[#707072] shrink-0">{spec.label}</dt>
+                    <dd
+                      className={`m-0 text-right text-[#111111] ${
+                        spec.tabular ? 'tabular-nums' : ''
+                      }`}
+                    >
+                      {spec.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+
+          {/* Row 2: Shipping & Returns */}
+          <div className="border-t border-b border-[#cacacb]">
+            <button
+              type="button"
+              aria-expanded={openDisclosure === 'shipping'}
+              onClick={() =>
+                setOpenDisclosure(openDisclosure === 'shipping' ? null : 'shipping')
+              }
+              className="w-full py-5 flex items-center justify-between text-left text-[16px] font-medium text-[#111111] cursor-pointer"
+            >
+              <span>Free Delivery and Returns</span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-transform duration-200 ${
+                  openDisclosure === 'shipping' ? 'rotate-180' : ''
+                }`}
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {openDisclosure === 'shipping' && (
+              <p className="m-0 pb-5 text-[14px] leading-[1.5] text-[#39393b]">
+                Free standard shipping on orders $50+ and 30-day free returns for Nike Members.
+              </p>
+            )}
+          </div>
         </section>
+
+        {/* Minimal Footer */}
+        <footer className="px-4 py-6 text-[11px] font-medium text-[#707072]">
+          © 2026 Nike, Inc. All Rights Reserved
+        </footer>
 
         {/* Toast Notification */}
         {showToast && (
@@ -880,14 +928,14 @@ export default function MobileProductPage() {
             role="status"
             aria-live="polite"
             style={{ bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))' }}
-            className="fixed left-1/2 -translate-x-1/2 bg-[var(--ink-primary)] text-white px-4 py-3 rounded-full text-[13px] font-medium shadow-[0_8px_24px_rgb(0_0_0/0.22)] z-50 flex items-center gap-2 whitespace-nowrap tabular-nums"
+            className="fixed left-1/2 -translate-x-1/2 bg-[#111111] text-[#ffffff] px-5 py-3 rounded-full text-[14px] font-medium z-50 flex items-center gap-2 whitespace-nowrap tabular-nums"
           >
             <svg
               width="14"
               height="14"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--accent-volt)"
+              stroke="#1eaa52"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -911,12 +959,12 @@ export default function MobileProductPage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="size-guide-title"
-              className="bg-[var(--surface-page)] rounded-2xl w-full max-w-[343px] p-5 max-h-[80dvh] flex flex-col shadow-[0_16px_48px_rgb(0_0_0/0.2)]"
+              className="bg-[#ffffff] rounded-[18px] w-full max-w-[343px] p-5 max-h-[80dvh] flex flex-col"
             >
               <div className="flex items-center justify-between mb-3">
                 <h3
                   id="size-guide-title"
-                  className="font-display m-0 text-[18px] font-bold tracking-[-0.02em] text-[var(--ink-primary)]"
+                  className="m-0 text-[20px] font-medium text-[#111111]"
                 >
                   Size Guide
                 </h3>
@@ -925,7 +973,7 @@ export default function MobileProductPage() {
                   type="button"
                   aria-label="Close size guide"
                   onClick={handleCloseSizeModal}
-                  className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center rounded-full text-[var(--ink-primary)] cursor-pointer pressable"
+                  className="w-[40px] h-[40px] rounded-full bg-[#f5f5f5] flex items-center justify-center text-[#111111] cursor-pointer relative before:content-[''] before:absolute before:-inset-0.5 nike-pressable"
                 >
                   <svg
                     width="18"
@@ -944,14 +992,14 @@ export default function MobileProductPage() {
                 </button>
               </div>
 
-              <p className="m-0 mb-4 text-[13px] leading-[1.5] text-[var(--ink-secondary)] text-pretty">
+              <p className="m-0 mb-4 text-[14px] leading-[1.5] text-[#707072]">
                 Nike Pegasus 43 fits true to size. Runners with wider feet may prefer half a size up.
               </p>
 
               <div className="overflow-y-auto overscroll-contain flex-1">
-                <table className="w-full text-[12px] text-left border-collapse tabular-nums">
+                <table className="w-full text-[13px] text-left border-collapse tabular-nums">
                   <thead>
-                    <tr className="hairline-b text-[var(--ink-secondary)]">
+                    <tr className="border-b border-[#cacacb] text-[#707072]">
                       <th className="py-2 font-medium">US Men</th>
                       <th className="py-2 font-medium">US Women</th>
                       <th className="py-2 font-medium">EU</th>
@@ -959,7 +1007,7 @@ export default function MobileProductPage() {
                   </thead>
                   <tbody>
                     {sizes.slice(0, 10).map((s) => (
-                      <tr key={s.sku} className="hairline-b text-[var(--ink-primary)]">
+                      <tr key={s.sku} className="border-b border-[#e5e5e5] text-[#111111]">
                         <td className="py-2">M {s.size_us_men}</td>
                         <td className="py-2">W {s.size_us_women}</td>
                         <td className="py-2">{s.size_eu}</td>
@@ -972,9 +1020,9 @@ export default function MobileProductPage() {
               <button
                 type="button"
                 onClick={handleCloseSizeModal}
-                className="cta-primary pressable w-full h-[44px] mt-4 rounded-lg bg-[var(--ink-primary)] text-white font-semibold text-[14px] cursor-pointer"
+                className="nike-btn-primary nike-pressable w-full h-[48px] mt-4 rounded-full bg-[#111111] text-[#ffffff] font-medium text-[16px] cursor-pointer"
               >
-                Close
+                Done
               </button>
             </div>
           </div>
