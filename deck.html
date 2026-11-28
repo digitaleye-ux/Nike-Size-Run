@@ -55,7 +55,6 @@
       background: var(--nike-canvas);
     }
 
-    /* Sticky Top Nav (56px, inset hairline) */
     .deck-nav {
       height: 56px;
       padding: 0 32px;
@@ -179,26 +178,17 @@
 
     .slide-header {
       border-bottom: 1px solid var(--nike-hairline);
-      padding-bottom: 20px;
-    }
-
-    .kicker {
-      margin: 0 0 10px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--nike-mute);
+      padding-bottom: 18px;
     }
 
     .action-title {
       margin: 0;
-      font-size: clamp(24px, 2.9vw, 34px);
+      font-size: clamp(26px, 3vw, 36px);
       font-weight: 500;
-      line-height: 1.18;
-      letter-spacing: -0.02em;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
       color: var(--nike-ink);
-      max-width: 960px;
+      max-width: 900px;
     }
 
     .slide-body {
@@ -208,7 +198,6 @@
       justify-content: center;
     }
 
-    /* Asymmetric & clean grids */
     .split-hero {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -271,7 +260,7 @@
     .section-heading {
       font-size: 16px;
       font-weight: 600;
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       color: var(--nike-ink);
     }
 
@@ -316,7 +305,6 @@
       outline-offset: -1px;
     }
 
-    /* Hairline rows */
     .spec-list {
       margin: 0;
       padding: 0;
@@ -328,7 +316,7 @@
       justify-content: space-between;
       align-items: baseline;
       gap: 20px;
-      padding: 14px 0;
+      padding: 13px 0;
       border-bottom: 1px solid var(--nike-hairline-soft);
       font-size: 14px;
     }
@@ -344,7 +332,7 @@
     .spec-key {
       color: var(--nike-mute);
       font-weight: 500;
-      shrink: 0;
+      flex-shrink: 0;
     }
 
     .spec-val {
@@ -353,16 +341,89 @@
       text-align: right;
     }
 
-    /* Causal Problem List (no uniform 4-card template) */
+    /* Bar Chart Component */
+    .chart-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .bar-label {
+      color: var(--nike-ink);
+    }
+
+    .bar-value {
+      color: var(--nike-mute);
+    }
+
+    .ink-panel .bar-label {
+      color: var(--nike-on-primary);
+    }
+
+    .ink-panel .bar-value {
+      color: var(--nike-stone);
+    }
+
+    .bar-track {
+      height: 10px;
+      width: 100%;
+      background: var(--nike-hairline-soft);
+      overflow: hidden;
+    }
+
+    .ink-panel .bar-track {
+      background: var(--nike-charcoal);
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--nike-ink);
+    }
+
+    .bar-fill.is-sale {
+      background: var(--nike-sale);
+    }
+
+    .bar-fill.is-mute {
+      background: var(--nike-mute);
+    }
+
+    .bar-fill.is-success {
+      background: var(--nike-success);
+    }
+
+    .ink-panel .bar-fill {
+      background: var(--nike-on-primary);
+    }
+
+    .ink-panel .bar-fill.is-success {
+      background: #1eaa52;
+    }
+
+    /* Causal Problem List */
     .causal-list {
       border-top: 1px solid var(--nike-hairline);
     }
 
     .causal-item {
       display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 24px;
-      padding: 18px 0;
+      grid-template-columns: 110px 1fr;
+      gap: 20px;
+      padding: 14px 0;
       border-bottom: 1px solid var(--nike-hairline-soft);
       align-items: baseline;
     }
@@ -384,13 +445,12 @@
     }
 
     .causal-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--nike-ink);
-      margin: 0 0 4px;
+      margin: 0 0 3px;
     }
 
-    /* Bottom slide dots */
     .deck-footer {
       display: flex;
       align-items: center;
@@ -509,9 +569,8 @@
       <!-- SLIDE 1: PUNCHLINE -->
       <section class="slide active" data-slide="1">
         <div class="slide-header">
-          <p class="kicker">01 · Punchline</p>
           <h1 class="action-title">
-            Locking the Pegasus 43 phone page ends mid-tap size errors with 98/100 Slow 4G performance and 0 px layout shift.
+            Pegasus 43 hits 98/100 on Slow 4G with 0 px shift.
           </h1>
         </div>
 
@@ -529,12 +588,12 @@
                 </div>
                 <div class="cloud-panel">
                   <p class="stat-num tabular-nums">26</p>
-                  <p class="stat-label">Live 8 Dec sizes (9 sold out, 7 low, 10 in)</p>
+                  <p class="stat-label">8 Dec sizes live on Vercel</p>
                 </div>
               </div>
 
               <p class="prose">
-                I rebuilt the 375 px product page and shipped it to Vercel from GitHub. Every box above the size grid holds its exact height from first paint, so a shopper on Slow 4G taps the size they meant to tap.
+                I rebuilt the 375 px product page and shipped it to Vercel from GitHub. Every element above the size grid holds its exact height from first paint, so shoppers on Slow 4G tap the size they meant to tap.
               </p>
             </div>
 
@@ -556,9 +615,8 @@
       <!-- SLIDE 2: SHOW DEMO / PROTOTYPE -->
       <section class="slide" data-slide="2">
         <div class="slide-header">
-          <p class="kicker">02 · Live prototype</p>
           <h1 class="action-title">
-            Shoppers on a 375 px phone can pick from all 26 live sizes above the fold without pinching or waiting.
+            All 26 sizes sit above the fold on a 375 px phone.
           </h1>
         </div>
 
@@ -566,13 +624,13 @@
           <div class="split-hero">
             <div>
               <p class="prose" style="margin-bottom: 20px;">
-                Here is the production page running on a 375 × 812 phone viewport. The shoe photo, price, size selector, and Add to Bag button all sit on the first screen.
+                This is the live page at 375 × 812. The shoe photo, price, size selector, and Add to Bag button all fit on the first screen without pinching.
               </p>
 
               <div class="spec-list">
                 <div class="spec-row">
                   <span class="spec-key">Header</span>
-                  <span class="spec-val">56 px sticky bar, 40 px circular Search and Bag icons</span>
+                  <span class="spec-val">56 px bar with Search and Bag icons</span>
                 </div>
                 <div class="spec-row">
                   <span class="spec-key">Photo stage</span>
@@ -580,7 +638,7 @@
                 </div>
                 <div class="spec-row">
                   <span class="spec-key">Price block</span>
-                  <span class="spec-val">$140 locked to 28 px line-height inside 32 px box</span>
+                  <span class="spec-val">$140 locked inside a 32 px container</span>
                 </div>
                 <div class="spec-row">
                   <span class="spec-key">Size grid</span>
@@ -611,53 +669,70 @@
       <!-- SLIDE 3: CONTEXT -->
       <section class="slide" data-slide="3">
         <div class="slide-header">
-          <p class="kicker">03 · Context</p>
           <h1 class="action-title">
-            Most shoppers will hit the December 10 Pegasus 43 launch on a 375 px phone over Slow 4G with 9 sizes already sold out.
+            December 10 shoppers hit Slow 4G with 9 sizes sold out.
           </h1>
         </div>
 
         <div class="slide-body">
           <div class="split-even">
             <div class="cloud-panel">
-              <p class="section-heading">Launch conditions</p>
+              <p class="section-heading">Launch test profile</p>
               <div class="spec-list">
                 <div class="spec-row">
                   <span class="spec-key">Shoe</span>
                   <span class="spec-val tabular-nums">Nike Pegasus 43 (HV7521-001)</span>
                 </div>
                 <div class="spec-row">
-                  <span class="spec-key">Launch date</span>
+                  <span class="spec-key">Launch</span>
                   <span class="spec-val tabular-nums">10 December 2026 ($140)</span>
                 </div>
                 <div class="spec-row">
-                  <span class="spec-key">Target screen</span>
+                  <span class="spec-key">Screen</span>
                   <span class="spec-val tabular-nums">375 × 812 CSS px at 3× density</span>
                 </div>
                 <div class="spec-row">
-                  <span class="spec-key">Network test</span>
+                  <span class="spec-key">Throttle</span>
                   <span class="spec-val tabular-nums">Slow 4G (150 ms RTT, 1638.4 Kbps), 4× CPU</span>
                 </div>
               </div>
             </div>
 
             <div>
-              <p class="section-heading">8 December 2026 stock snapshot</p>
+              <p class="section-heading">8 December 2026 stock breakdown (26 sizes)</p>
               <p class="prose" style="margin-bottom: 20px;">
-                The snapshot lists 26 US Men/Women pairs from M 3.5 / W 5 to M 16 / W 17.5. Stock is tight across popular sizes, so sold-out and low-stock options have to be clear before anyone taps Add to Bag.
+                Over a third of the 26 sizes are already out of stock before launch, and 7 more have 5 or fewer pairs left.
               </p>
-              <div class="spec-list">
-                <div class="spec-row">
-                  <span class="spec-key">Sold out</span>
-                  <span class="spec-val tabular-nums">9 sizes (M 4.5, 6, 9, 10, 11.5, 14, 15, 15.5, 16)</span>
+
+              <div class="chart-group" data-chart="stock-split">
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">In stock</span>
+                    <span class="bar-value tabular-nums">10 sizes (38%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 38.5%;"></div>
+                  </div>
                 </div>
-                <div class="spec-row">
-                  <span class="spec-key">Low stock</span>
-                  <span class="spec-val tabular-nums">7 sizes (1 to 5 pairs left)</span>
+
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Sold out (disabled)</span>
+                    <span class="bar-value tabular-nums">9 sizes (35%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-mute" style="width: 34.6%;"></div>
+                  </div>
                 </div>
-                <div class="spec-row">
-                  <span class="spec-key">In stock</span>
-                  <span class="spec-val tabular-nums">10 sizes</span>
+
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Low stock (1 to 5 pairs left)</span>
+                    <span class="bar-value tabular-nums">7 sizes (27%)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-sale" style="width: 26.9%;"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -673,50 +748,87 @@
       <!-- SLIDE 4: PROBLEM (DEEP DIVE) -->
       <section class="slide" data-slide="4">
         <div class="slide-header">
-          <p class="kicker">04 · The problem</p>
           <h1 class="action-title">
-            Late-loading photos, unreserved price boxes, and client-fetched inventory shove size buttons downward right as a shopper's thumb taps.
+            Late assets shove size buttons down mid-tap.
           </h1>
         </div>
 
         <div class="slide-body">
-          <div class="causal-list">
-            <div class="causal-item">
-              <span class="causal-stage">1. Pinching</span>
-              <div>
-                <p class="causal-title">Desktop layouts shrunk to a phone screen</p>
-                <p class="prose">Small text and tight buttons forced shoppers to pinch-to-zoom just to read US Men/Women size pairs.</p>
+          <div class="split-even">
+            <div class="causal-list">
+              <div class="causal-item">
+                <span class="causal-stage">1. Pinching</span>
+                <div>
+                  <p class="causal-title">Desktop layout shrunk to phone</p>
+                  <p class="prose">Small targets forced shoppers to pinch-to-zoom before reading sizes.</p>
+                </div>
+              </div>
+
+              <div class="causal-item">
+                <span class="causal-stage">2. Slow 4G</span>
+                <div>
+                  <p class="causal-title">Three elements loaded late</p>
+                  <p class="prose">An unsized hero image, an unlocked price box during font swap, and client-fetched <code>sizes.json</code> changed page height after paint.</p>
+                </div>
+              </div>
+
+              <div class="causal-item">
+                <span class="causal-stage">3. Mis-tap</span>
+                <div>
+                  <p class="causal-title">Grid jumped under the thumb</p>
+                  <p class="prose">As a shopper tapped M 8, the row dropped and registered the wrong size.</p>
+                </div>
+              </div>
+
+              <div class="causal-item is-outcome">
+                <span class="causal-stage">4. Returns</span>
+                <div>
+                  <p class="causal-title">Wrong orders and lost stock</p>
+                  <p class="prose">Shoppers either hit a sold-out size and left or bought the wrong size and returned it.</p>
+                </div>
               </div>
             </div>
 
-            <div class="causal-item">
-              <span class="causal-stage">2. Slow 4G</span>
-              <div>
-                <p class="causal-title">Three elements arrived late above the size grid</p>
-                <p class="prose">An unsized hero image, a price box with no <code>min-height</code> during font swap, and client-only <code>fetch('/sizes.json')</code> each changed page height after first paint.</p>
-              </div>
-            </div>
-
-            <div class="causal-item">
-              <span class="causal-stage">3. Mis-taps</span>
-              <div>
-                <p class="causal-title">The grid jumped under the shopper's finger</p>
-                <p class="prose">When a shopper reached for M 8 as soon as it appeared, a late asset pushed the row down. Their thumb landed on the wrong button.</p>
-              </div>
-            </div>
-
-            <div class="causal-item is-outcome">
-              <span class="causal-stage">4. Returns</span>
-              <div>
-                <p class="causal-title">Wrong-size orders and wasted launch stock</p>
-                <p class="prose">Shoppers either hit a sold-out size and left, or ordered the wrong size and sent the shoes back.</p>
+            <div class="cloud-panel">
+              <p class="section-heading">Why Slow 4G triggers mid-tap jumps</p>
+              <p class="prose" style="margin-bottom: 18px;">
+                On a throttled connection, requests land hundreds of milliseconds apart. Unreserved elements keep resizing the page after the shopper starts reaching for a size.
+              </p>
+              <div class="chart-group" data-chart="slow-4g-delays">
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Slow 4G request round-trip</span>
+                    <span class="bar-value tabular-nums">562.5 ms latency</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-mute" style="width: 37%;"></div>
+                  </div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">First Contentful Paint</span>
+                    <span class="bar-value tabular-nums">0.9 s</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 45%;"></div>
+                  </div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Hero photo + font swap window</span>
+                    <span class="bar-value tabular-nums">up to 2.0 s</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-sale" style="width: 100%;"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="deck-footer">
-          <span>Observed in Chrome DevTools under Slow 4G + 4× CPU throttling</span>
+          <span>Root cause measured in Chrome DevTools Slow 4G trace</span>
           <div class="slide-pills"></div>
         </div>
       </section>
@@ -724,50 +836,78 @@
       <!-- SLIDE 5: KEY INSIGHT 1 (MOBILE FIRST) -->
       <section class="slide" data-slide="5">
         <div class="slide-header">
-          <p class="kicker">05 · Key insight 1</p>
           <h1 class="action-title">
-            Starting at 375 px first forces thumb-sized 44 px targets and ends pinch-to-zoom before a single line of desktop layout is written.
+            Designing at 375 px first guarantees 44 px thumb targets.
           </h1>
         </div>
 
         <div class="slide-body">
           <div class="split-even">
             <div class="cloud-panel">
-              <p class="section-heading">Phone screen order</p>
-              <div class="spec-list">
-                <div class="spec-row">
-                  <span class="spec-key">1</span>
-                  <span class="spec-val">Square 1:1 product photo (375 × 375 px)</span>
+              <p class="section-heading">Touch target comparison</p>
+              <p class="prose" style="margin-bottom: 18px;">
+                I built for a 375 px screen before touching desktop, sizing every button for a human thumb rather than a mouse cursor.
+              </p>
+              <div class="chart-group" data-chart="touch-targets">
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Pegasus 43 button width</span>
+                    <span class="bar-value tabular-nums">108 px</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 100%;"></div>
+                  </div>
                 </div>
-                <div class="spec-row">
-                  <span class="spec-key">2</span>
-                  <span class="spec-val">Name, colorway swatch, and $140 price</span>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Pegasus 43 button height</span>
+                    <span class="bar-value tabular-nums">52 px</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 48%;"></div>
+                  </div>
                 </div>
-                <div class="spec-row">
-                  <span class="spec-key">3</span>
-                  <span class="spec-val">2-row horizontal size rail (108 × 52 px buttons)</span>
-                </div>
-                <div class="spec-row">
-                  <span class="spec-key">4</span>
-                  <span class="spec-val">Full-width Add to Bag pill button</span>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">WCAG / speed-budget minimum</span>
+                    <span class="bar-value tabular-nums">44 px</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-mute" style="width: 41%;"></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div>
-              <p class="section-heading">Why a 2-row horizontal rail won</p>
-              <p class="prose" style="margin-bottom: 16px;">
-                I rejected a tall vertical grid of 26 buttons because it pushed Add to Bag below the fold. A 2-row horizontal rail keeps 6 to 8 sizes and the main CTA on the first screen, with every tap target at 108 × 52 px (well past the 44 px floor).
-              </p>
+              <p class="section-heading">Top-to-bottom 375 px page order</p>
+              <div class="spec-list" style="margin-bottom: 16px;">
+                <div class="spec-row">
+                  <span class="spec-key">1. Hero</span>
+                  <span class="spec-val">1:1 Studio Shoe Photo (375 × 375 px)</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">2. Price</span>
+                  <span class="spec-val">Name, colorway swatch, and $140</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">3. Sizes</span>
+                  <span class="spec-val">2-row horizontal scroll rail (all 26 sizes)</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">4. Action</span>
+                  <span class="spec-val">Full-width Add to Bag pill CTA</span>
+                </div>
+              </div>
               <p class="prose">
-                I also kept sold-out sizes visible in the rail rather than hiding them, so shoppers see what is gone instead of wondering why a size is missing.
+                A 2-row horizontal rail keeps 6 to 8 sizes and the Add to Bag button visible on the first screen, instead of pushing the CTA below the fold.
               </p>
             </div>
           </div>
         </div>
 
         <div class="deck-footer">
-          <span>Every button measures 108 × 52 px</span>
+          <span>All 26 buttons clear the 44 px minimum</span>
           <div class="slide-pills"></div>
         </div>
       </section>
@@ -775,34 +915,42 @@
       <!-- SLIDE 6: KEY INSIGHT 2 (STATIC SIZE GRID) -->
       <section class="slide" data-slide="6">
         <div class="slide-header">
-          <p class="kicker">06 · Key insight 2</p>
           <h1 class="action-title">
-            Because a shopper's thumb moves the instant buttons appear, the size grid must stay frozen at 0 px shift from first paint.
+            Shoppers tap immediately, so the grid must stay frozen at 0 px.
           </h1>
         </div>
 
         <div class="slide-body">
           <div class="split-even">
             <div class="cloud-panel">
-              <p class="section-heading" style="color: var(--nike-sale);">Unlocked layout (what shifted)</p>
-              <div class="spec-list">
-                <div class="spec-row">
-                  <span class="spec-key">Hero photo</span>
-                  <span class="spec-val">Collapsed until the image finished loading</span>
+              <p class="section-heading">Why 0 px shift is non-negotiable</p>
+              <p class="prose" style="margin-bottom: 18px;">
+                A shopper's thumb starts moving the instant size buttons paint. Even a small shift from a late image or font swap moves the target out from under their finger.
+              </p>
+              <div class="chart-group" data-chart="shift-comparison">
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Unreserved image + price + client fetch</span>
+                    <span class="bar-value tabular-nums">Grid shifts downward</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-sale" style="width: 85%;"></div>
+                  </div>
                 </div>
-                <div class="spec-row">
-                  <span class="spec-key">Price box</span>
-                  <span class="spec-val">Changed height when the web font swapped in</span>
-                </div>
-                <div class="spec-row">
-                  <span class="spec-key">Size data</span>
-                  <span class="spec-val">Waited on client-side fetch before drawing</span>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Locked 375 px containers + pre-hydrated sizes</span>
+                    <span class="bar-value tabular-nums">0 px shift (CLS 0.000)</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-success" style="width: 2%;"></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="ink-panel">
-              <p class="section-heading" style="color: #ffffff;">Locked layout (0 px movement)</p>
+              <p class="section-heading" style="color: #ffffff;">What holds the grid still</p>
               <div class="spec-list">
                 <div class="spec-row" style="border-color: #39393b;">
                   <span class="spec-key" style="color: #9e9ea0;">Hero photo</span>
@@ -814,7 +962,11 @@
                 </div>
                 <div class="spec-row" style="border-color: #39393b;">
                   <span class="spec-key" style="color: #9e9ea0;">Size data</span>
-                  <span class="spec-val" style="color: #ffffff;">26 sizes pre-hydrated on the server at t = 0</span>
+                  <span class="spec-val" style="color: #ffffff;">26 sizes pre-hydrated at t = 0</span>
+                </div>
+                <div class="spec-row" style="border-color: #39393b;">
+                  <span class="spec-key" style="color: #9e9ea0;">Alerts</span>
+                  <span class="spec-val" style="color: #ffffff;">Errors and low-stock notes sit below the grid</span>
                 </div>
               </div>
             </div>
@@ -822,7 +974,7 @@
         </div>
 
         <div class="deck-footer">
-          <span>Alerts and low-stock messages render below the grid so they never push buttons</span>
+          <span>Verified Slow 4G layout shift: 0.000</span>
           <div class="slide-pills"></div>
         </div>
       </section>
@@ -830,9 +982,8 @@
       <!-- SLIDE 7: SOLUTION (ARCHITECTURE & STOCK ACCURACY) -->
       <section class="slide" data-slide="7">
         <div class="slide-header">
-          <p class="kicker">07 · Solution (page &amp; stock)</p>
           <h1 class="action-title">
-            Reserving every above-the-fold box and disabling the 9 sold-out sizes from the 8 December snapshot keeps taps accurate.
+            Locked containers and disabled sold-out states keep taps accurate.
           </h1>
         </div>
 
@@ -845,29 +996,34 @@
               />
             </div>
 
-            <div class="spec-list">
-              <div class="spec-row">
-                <span class="spec-key">Studio WebP photos</span>
-                <span class="spec-val">Two 750 × 750 images compressed to 23 KB and 28 KB</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-key">Locked price &amp; font</span>
-                <span class="spec-val">min-height: 28 px on price, font-synthesis: none, tabular-nums</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-key">Sold-out matching</span>
-                <span class="spec-val">!in_stock || stock_status === 'sold_out' disables 9 sizes</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-key">Nike design system</span>
-                <span class="spec-val">Applied DESIGN.md (#111111, #ffffff, #f5f5f5, pill CTAs)</span>
+            <div>
+              <p class="prose" style="margin-bottom: 18px;">
+                I paired locked layout boxes with strict stock matching against the 8 December snapshot so unavailable sizes cannot be tapped.
+              </p>
+              <div class="spec-list">
+                <div class="spec-row">
+                  <span class="spec-key">Studio WebP photos</span>
+                  <span class="spec-val">Two 750 × 750 images compressed to 23 KB and 28 KB</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Locked price and font</span>
+                  <span class="spec-val">min-height: 28 px on price, font-synthesis: none</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Sold-out matching</span>
+                  <span class="spec-val">!in_stock || stock_status === 'sold_out' disables 9 sizes</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-key">Nike design system</span>
+                  <span class="spec-val">Applied DESIGN.md (#111111, #ffffff, #f5f5f5, pill CTAs)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="deck-footer">
-          <span>Sold-out sizes stay visible, greyed out, struck through, and unclickable</span>
+          <span>Sold-out sizes stay visible, greyed out, struck through, and disabled</span>
           <div class="slide-pills"></div>
         </div>
       </section>
@@ -875,9 +1031,8 @@
       <!-- SLIDE 8: SOLUTION (TOOLS, CI & RESULTS) -->
       <section class="slide" data-slide="8">
         <div class="slide-header">
-          <p class="kicker">08 · Solution (tools, CI &amp; results)</p>
           <h1 class="action-title">
-            Automated CI checks on the live Vercel deploy enforce our speed budget and stock accuracy on every GitHub push.
+            GitHub CI enforces speed and stock accuracy on every push.
           </h1>
         </div>
 
@@ -887,7 +1042,7 @@
               <p class="section-heading">Tools and launch gates</p>
               <div class="spec-list">
                 <div class="spec-row">
-                  <span class="spec-key">App &amp; build</span>
+                  <span class="spec-key">App and build</span>
                   <span class="spec-val">Next.js 16 + Tailwind CSS, built with Claude Code</span>
                 </div>
                 <div class="spec-row">
@@ -910,29 +1065,44 @@
             </div>
 
             <div class="ink-panel">
-              <p class="kicker" style="color: #9e9ea0; margin-bottom: 12px;">Live Vercel Slow 4G Lighthouse</p>
-              <div class="split-even" style="gap: 16px; margin-bottom: 16px;">
-                <div>
-                  <p class="stat-num tabular-nums">98</p>
-                  <p class="stat-label">Performance</p>
+              <p class="section-heading" style="color: #ffffff;">Live Vercel Slow 4G Lighthouse</p>
+              <div class="chart-group" data-chart="lighthouse-scores" style="margin-bottom: 18px;">
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Performance (min 90)</span>
+                    <span class="bar-value tabular-nums">98 / 100</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill is-success" style="width: 98%;"></div>
+                  </div>
                 </div>
-                <div>
-                  <p class="stat-num tabular-nums">0.000</p>
-                  <p class="stat-label">CLS (0 px shift)</p>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Accessibility</span>
+                    <span class="bar-value tabular-nums">96 / 100</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 96%;"></div>
+                  </div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-meta">
+                    <span class="bar-label">Best Practices &amp; SEO</span>
+                    <span class="bar-value tabular-nums">100 / 100</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: 100%;"></div>
+                  </div>
                 </div>
               </div>
               <div class="spec-list">
                 <div class="spec-row" style="border-color: #39393b;">
-                  <span class="spec-key" style="color: #9e9ea0;">First Contentful Paint</span>
-                  <span class="spec-val tabular-nums" style="color: #ffffff;">0.9 s</span>
+                  <span class="spec-key" style="color: #9e9ea0;">CLS (size grid shift)</span>
+                  <span class="spec-val tabular-nums" style="color: #ffffff;">0.000 (0 px)</span>
                 </div>
                 <div class="spec-row" style="border-color: #39393b;">
-                  <span class="spec-key" style="color: #9e9ea0;">Largest Contentful Paint</span>
-                  <span class="spec-val tabular-nums" style="color: #ffffff;">2.0 s</span>
-                </div>
-                <div class="spec-row" style="border-color: #39393b;">
-                  <span class="spec-key" style="color: #9e9ea0;">Best Practices / SEO / A11y</span>
-                  <span class="spec-val tabular-nums" style="color: #ffffff;">100 / 100 / 96</span>
+                  <span class="spec-key" style="color: #9e9ea0;">FCP / LCP</span>
+                  <span class="spec-val tabular-nums" style="color: #ffffff;">0.9 s / 2.0 s</span>
                 </div>
               </div>
             </div>
