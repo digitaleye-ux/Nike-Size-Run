@@ -23,4 +23,6 @@ This project implements the mobile product page (375px width) for the **Nike Peg
 - `Web Platform Slow 4G Mobile Check Profile.yaml` - Mobile Slow 4G check contract
 - `speed-budget.json` - Launch check speed budget contract
 - `NOTES.md` - Grid mover audit, Slow 4G trace analysis, and prompt decision log
+- `phone-screenshot-size-selected.png` - 375px mobile phone screenshot with size selected and sold-out states
+- `screenshots/` - Viewport and full-page mobile screenshots
 - `products/pegasus-43-nextjs/` - Next.js project directory
