@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nike Pegasus 43 — Mobile Size Run Case Study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --nike-ink: #111111;
+      --nike-on-primary: #ffffff;
+      --nike-canvas: #ffffff;
+      --nike-soft-cloud: #f5f5f5;
+      --nike-charcoal: #39393b;
+      --nike-mute: #707072;
+      --nike-stone: #9e9ea0;
+      --nike-hairline: #cacacb;
+      --nike-hairline-soft: #e5e5e5;
+      --nike-sale: #d30005;
+      --nike-success: #007d48;
+      --nike-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--nike-canvas);
+      color: var(--nike-ink);
+      font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-synthesis: none;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* App Shell */
+    .deck-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100%;
+      background: var(--nike-canvas);
+    }
+
+    /* Sticky Top Nav per DESIGN.md (56px, inset #e5e5e5 hairline) */
+    .deck-nav {
+      height: 56px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--nike-canvas);
+      box-shadow: inset 0 -1px 0 var(--nike-hairline-soft);
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .deck-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .deck-brand-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--nike-mute);
+      letter-spacing: 0.01em;
+    }
+
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--nike-mute);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .icon-circle-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: var(--nike-soft-cloud);
+      color: var(--nike-ink);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 140ms ease-out, transform 120ms var(--nike-ease);
+    }
+
+    .icon-circle-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .icon-circle-btn:not(:disabled):hover {
+        background: var(--nike-hairline-soft);
+      }
+      .pill-cta:hover {
+        background: var(--nike-charcoal);
+      }
+      .pill-secondary:hover {
+        background: var(--nike-hairline-soft);
+      }
+    }
+
+    .icon-circle-btn:not(:disabled):active,
+    .pill-cta:active,
+    .pill-secondary:active {
+      transform: scale(0.97);
+    }
+
+    .pill-cta {
+      height: 36px;
+      padding: 0 18px;
+      border-radius: 9999px;
+      background: var(--nike-ink);
+      color: var(--nike-on-primary);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 140ms ease-out, transform 120ms var(--nike-ease);
+    }
+
+    .pill-secondary {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 9999px;
+      background: var(--nike-soft-cloud);
+      color: var(--nike-ink);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 140ms ease-out, transform 120ms var(--nike-ease);
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      height: 2px;
+      width: 100%;
+      background: var(--nike-hairline-soft);
+      flex-shrink: 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--nike-ink);
+      transition: width 240ms var(--nike-ease);
+    }
+
+    /* Slide Stage */
+    .stage {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 32px;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1160px;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .slide-header {
+      border-bottom: 1px solid var(--nike-hairline);
+      padding-bottom: 20px;
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--nike-mute);
+    }
+
+    .action-title {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 500;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      color: var(--nike-ink);
+      max-width: 980px;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--nike-hairline-soft);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--nike-mute);
+    }
+
+    /* Grid & Surface Blocks (flat, zero drop shadow per DESIGN.md) */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .grid-2-equal {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .cloud-box {
+      background: var(--nike-soft-cloud);
+      padding: 24px;
+    }
+
+    .ink-box {
+      background: var(--nike-ink);
+      color: var(--nike-on-primary);
+      padding: 24px;
+    }
+
+    .hairline-box {
+      background: var(--nike-canvas);
+      border: 1px solid var(--nike-hairline);
+      padding: 24px;
+    }
+
+    .stat-num {
+      font-size: 44px;
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--nike-mute);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .ink-box .stat-label {
+      color: var(--nike-stone);
+    }
+
+    .box-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--nike-ink);
+    }
+
+    .box-copy {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--nike-charcoal);
+      margin: 0;
+    }
+
+    /* Product Stage */
+    .studio-frame {
+      background: var(--nike-soft-cloud);
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .studio-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .phone-frame {
+      background: var(--nike-soft-cloud);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .phone-frame img {
+      width: 100%;
+      max-width: 240px;
+      height: auto;
+      display: block;
+      border: 1px solid var(--nike-hairline);
+    }
+
+    /* Step rows (PDP disclosure style) */
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--nike-hairline-soft);
+      font-size: 14px;
+    }
+
+    .spec-row:first-child {
+      border-top: 1px solid var(--nike-hairline);
+    }
+
+    .spec-row:last-child {
+      border-bottom: 1px solid var(--nike-hairline);
+    }
+
+    .spec-key {
+      color: var(--nike-mute);
+      font-weight: 500;
+    }
+
+    .spec-val {
+      color: var(--nike-ink);
+      font-weight: 500;
+      text-align: right;
+    }
+
+    /* Problem Chain */
+    .chain-step {
+      background: var(--nike-soft-cloud);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+    }
+
+    .chain-step.is-fail {
+      background: var(--nike-ink);
+      color: var(--nike-on-primary);
+    }
+
+    .chain-num {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--nike-mute);
+    }
+
+    .chain-step.is-fail .chain-num {
+      color: #ff6b6b;
+    }
+
+    .chain-step.is-fail .box-title {
+      color: var(--nike-on-primary);
+    }
+
+    .chain-step.is-fail .box-copy {
+      color: #e5e5e5;
+    }
+
+    /* Mini size buttons preview */
+    .mini-size-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini-size {
+      height: 44px;
+      border-radius: 6px;
+      border: 1px solid var(--nike-hairline);
+      background: var(--nike-canvas);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .mini-size.is-picked {
+      background: var(--nike-ink);
+      border-color: var(--nike-ink);
+      color: var(--nike-on-primary);
+    }
+
+    .mini-size.is-sold {
+      background: var(--nike-soft-cloud);
+      border-color: var(--nike-hairline-soft);
+      color: var(--nike-stone);
+      text-decoration: line-through;
+    }
+
+    .mini-size.is-low span:last-child {
+      font-size: 10px;
+      color: var(--nike-sale);
+    }
+
+    .badge-pass {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--nike-success);
+    }
+
+    .badge-fail {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--nike-sale);
+    }
+
+    /* Slide Switcher Dots */
+    .slide-pills {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slide-dot {
+      width: 24px;
+      height: 4px;
+      border-radius: 9999px;
+      background: var(--nike-hairline-soft);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 150ms ease-out;
+    }
+
+    .slide-dot.active {
+      background: var(--nike-ink);
+    }
+
+    @media (max-width: 900px) {
+      .deck-nav {
+        padding: 0 16px;
+      }
+      .stage {
+        padding: 20px 16px;
+      }
+      .grid-2,
+      .grid-2-equal,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .deck-brand-label {
+        display: none;
+      }
+    }
+
+    @media print {
+      .deck-nav,
+      .progress-track,
+      .slide-pills {
+        display: none !important;
+      }
+      .stage {
+        padding: 0;
+        overflow: visible;
+      }
+      .slide {
+        display: flex !important;
+        page-break-after: always;
+        min-height: 95vh;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <!-- Primary Nav -->
+    <header class="deck-nav">
+      <div class="deck-brand">
+        <svg width="46" height="17" viewBox="0 0 69 24" fill="#111111" aria-label="Nike">
+          <path d="M68.25 1.07L18.43 22.18C12.35 24.75 7.42 23.36 5.14 19.65C2.86 15.94 4.19 10.37 8.46 5.86C11.15 3.02 14.23 1.25 15.66 0.61C12.97 3.91 10.74 7.77 12.14 11.49C13.34 14.68 17.56 15.39 22.84 13.71L68.25 1.07Z" />
+        </svg>
+        <span class="deck-brand-label">Pegasus 43 Mobile Size Run · Launch Review</span>
+      </div>
+
+      <div class="deck-controls">
+        <button id="prevBtn" class="icon-circle-btn" type="button" aria-label="Previous slide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <span id="counter" class="slide-counter tabular-nums">1 / 8</span>
+        <button id="nextBtn" class="icon-circle-btn" type="button" aria-label="Next slide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+        <a
+          class="pill-cta"
+          href="https://nike-size-run-mu.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Live Page ↗
+        </a>
+      </div>
+    </header>
+
+    <div class="progress-track">
+      <div id="progressFill" class="progress-fill" style="width: 12.5%"></div>
+    </div>
+
+    <!-- Slides Stage -->
+    <main class="stage">
+      <!-- SLIDE 1: PUNCHLINE -->
+      <section class="slide active" data-slide="1">
+        <div class="slide-header">
+          <p class="kicker">01 · Punchline</p>
+          <h1 class="action-title">
+            Locking the Pegasus 43 phone page eliminates mid-tap size errors with 98/100 Slow 4G performance and zero layout shift.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div>
+              <div class="grid-3" style="margin-bottom: 16px;">
+                <div class="ink-box">
+                  <p class="stat-num tabular-nums">98</p>
+                  <p class="stat-label">Slow 4G Mobile Lighthouse score (budget ≥ 90)</p>
+                </div>
+                <div class="cloud-box">
+                  <p class="stat-num tabular-nums">0 px</p>
+                  <p class="stat-label">Size grid vertical shift (CLS 0.000)</p>
+                </div>
+                <div class="cloud-box">
+                  <p class="stat-num tabular-nums">26</p>
+                  <p class="stat-label">8 Dec sizes verified (9 sold out, 7 low, 10 in)</p>
+                </div>
+              </div>
+
+              <div class="hairline-box">
+                <p class="box-title">Why it matters for launch day</p>
+                <p class="box-copy">
+                  Live on Vercel and wired to GitHub CI, the 375 px page locks every above-the-fold box before first paint—so phone shoppers never tap a shifted size button by mistake and trigger a return.
+                </p>
+              </div>
+            </div>
+
+            <div class="studio-frame">
+              <img
+                src="./products/pegasus-43-nextjs/public/pegasus-43-side.webp"
+                alt="Nike Pegasus 43 in Black, White, and Volt"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Live: nike-size-run-mu.vercel.app</span>
+          <span>Next: Live 375 px phone prototype</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: SHOW DEMO / PROTOTYPE -->
+      <section class="slide" data-slide="2">
+        <div class="slide-header">
+          <p class="kicker">02 · Live Prototype</p>
+          <h1 class="action-title">
+            Shoppers on a 375 px phone can now pick from all 26 live sizes above the fold without pinching or waiting.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div>
+              <div class="spec-row">
+                <span class="spec-key">1 · Sticky Header (56 px)</span>
+                <span class="spec-val">Nike Swoosh + 40 px circular Search &amp; Bag controls</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">2 · Studio Stage (375 × 375)</span>
+                <span class="spec-val">1:1 Soft Cloud backdrop, 23 KB WebP, 0 px collapse</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">3 · Name &amp; Locked Price</span>
+                <span class="spec-val">$140 locked at 28 px line-height inside 32 px box</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">4 · 2-Row Size Grid (108 × 52 px)</span>
+                <span class="spec-val">M 5.5 / W 7 active in #111111; 9 sold-out disabled</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">5 · Pill CTA Above the Fold</span>
+                <span class="spec-val">Full-width Add to Bag pill immediately reachable by thumb</span>
+              </div>
+            </div>
+
+            <div class="phone-frame">
+              <img
+                src="./phone-screenshot-size-selected.png"
+                alt="375 px phone screenshot showing M 5.5 / W 7 selected and sold-out sizes disabled"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Captured at 375 × 812 @ 3× DPR with touch enabled</span>
+          <span>Next: Launch context &amp; real-world constraints</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: CONTEXT -->
+      <section class="slide" data-slide="3">
+        <div class="slide-header">
+          <p class="kicker">03 · Context</p>
+          <h1 class="action-title">
+            Most shoppers will hit the December 10 Pegasus 43 launch on a 375 px phone over Slow 4G with 9 sizes already sold out.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2-equal">
+            <div class="cloud-box">
+              <p class="box-title">Launch &amp; Device Profile</p>
+              <div class="spec-row">
+                <span class="spec-key">Product</span>
+                <span class="spec-val tabular-nums">Nike Pegasus 43 · HV7521-001</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Launch Date &amp; Price</span>
+                <span class="spec-val tabular-nums">10 December 2026 · $140</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Phone Viewport</span>
+                <span class="spec-val tabular-nums">375 × 812 CSS px (3× density)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Network &amp; CPU Budget</span>
+                <span class="spec-val tabular-nums">Slow 4G (150 ms RTT, 1638.4 Kbps) · 4× CPU</span>
+              </div>
+            </div>
+
+            <div class="hairline-box">
+              <p class="box-title">8 December 2026 Stock Snapshot (26 Sizes)</p>
+              <p class="box-copy" style="margin-bottom: 16px;">
+                Pre-launch inventory splits unevenly across M 3.5 / W 5 through M 16 / W 17.5, so availability must be unmistakable at a glance.
+              </p>
+              <div class="mini-size-grid">
+                <div class="mini-size is-low">
+                  <span>M 3.5 / W 5</span>
+                  <span>Few left</span>
+                </div>
+                <div class="mini-size is-sold">
+                  <span>M 4.5 / W 6</span>
+                  <span style="font-size:10px;">Sold out</span>
+                </div>
+                <div class="mini-size is-picked">
+                  <span>M 5.5 / W 7</span>
+                  <span style="font-size:10px;">In stock (10)</span>
+                </div>
+              </div>
+              <div class="grid-3" style="margin-top: 16px;">
+                <div class="cloud-box" style="padding: 14px;">
+                  <p class="stat-num tabular-nums" style="font-size: 28px;">9</p>
+                  <p class="stat-label" style="font-size: 12px;">Sold out (disabled)</p>
+                </div>
+                <div class="cloud-box" style="padding: 14px;">
+                  <p class="stat-num tabular-nums" style="font-size: 28px;">7</p>
+                  <p class="stat-label" style="font-size: 12px;">Low stock (≤ 5 left)</p>
+                </div>
+                <div class="cloud-box" style="padding: 14px;">
+                  <p class="stat-num tabular-nums" style="font-size: 28px;">10</p>
+                  <p class="stat-label" style="font-size: 12px;">In stock</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Contract: Web Platform Slow 4G Mobile Check Profile</span>
+          <span>Next: What breaks under these exact conditions</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: PROBLEM (DEEP DIVE) -->
+      <section class="slide" data-slide="4">
+        <div class="slide-header">
+          <p class="kicker">04 · The Problem</p>
+          <h1 class="action-title">
+            Late-loading photos, unreserved price boxes, and client-fetched inventory shove size buttons downward right as a shopper’s thumb taps.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-4">
+            <div class="chain-step">
+              <span class="chain-num">STEP 01 · VIEWPORT</span>
+              <div>
+                <p class="box-title">Desktop layout shrunk to mobile</p>
+                <p class="box-copy">
+                  Unconstrained containers and small hit areas forced shoppers to pinch-to-zoom before they could read or tap sizes accurately.
+                </p>
+              </div>
+            </div>
+
+            <div class="chain-step">
+              <span class="chain-num">STEP 02 · SLOW 4G ARRIVAL</span>
+              <div>
+                <p class="box-title">Three elements jump above the grid</p>
+                <p class="box-copy">
+                  An unsized hero image, a price element without <code style="font-size:12px;">min-height</code> during font swap, and client-side <code style="font-size:12px;">fetch('/sizes.json')</code> all arrive late.
+                </p>
+              </div>
+            </div>
+
+            <div class="chain-step">
+              <span class="chain-num">STEP 03 · THE MIS-TAP</span>
+              <div>
+                <p class="box-title">Size grid shifts under the thumb</p>
+                <p class="box-copy">
+                  As the shopper commits to tapping M 8, late-arriving content pushes the grid down—landing their finger on the neighboring size instead.
+                </p>
+              </div>
+            </div>
+
+            <div class="chain-step is-fail">
+              <span class="chain-num">STEP 04 · BUSINESS COST</span>
+              <div>
+                <p class="box-title">Wrong-size orders &amp; costly returns</p>
+                <p class="box-copy">
+                  Shoppers either hit a sold-out cell and bounce, or check out the wrong size—driving reverse-logistics cost and lost launch stock.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Root cause observed in Slow 4G DevTools trace</span>
+          <span>Next: Key Insight 1 — designing phone-first</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: KEY INSIGHT 1 (MOBILE FIRST) -->
+      <section class="slide" data-slide="5">
+        <div class="slide-header">
+          <p class="kicker">05 · Key Insight 1</p>
+          <h1 class="action-title">
+            Starting at 375 px first forces thumb-sized 44 px targets and ends pinch-to-zoom before a single line of desktop layout is written.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2-equal">
+            <div class="cloud-box">
+              <p class="box-title">Top-to-Bottom 375 px Page Order</p>
+              <div class="spec-row">
+                <span class="spec-key">Top</span>
+                <span class="spec-val">1:1 Studio Shoe Photo (375 × 375 px)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Middle</span>
+                <span class="spec-val">Product Title, Concentric Swatch &amp; $140 Price</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Thumb Zone</span>
+                <span class="spec-val">2-Row Horizontal Size Grid (108 × 52 px buttons)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Action</span>
+                <span class="spec-val">Full-Width Obsidian Pill CTA (Add to Bag)</span>
+              </div>
+            </div>
+
+            <div class="hairline-box">
+              <p class="box-title">Why 2-Row Horizontal Scroll Beats Vertical Wrapping</p>
+              <p class="box-copy" style="margin-bottom: 16px;">
+                Stacking 26 size buttons vertically pushes the <strong>Add to Bag</strong> button off the first screen. A compact 2-row horizontal rail keeps 6–8 sizes and the primary CTA visible above the fold—while holding every touch target at <strong>108 × 52 px</strong> (above the 44 × 44 px WCAG floor).
+              </p>
+              <p class="badge-pass">✓ Zero pinch-to-zoom · ✓ Zero cramped taps · ✓ CTA stays above the fold</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Design system: Nike DESIGN.md + 44 px touch floor</span>
+          <span>Next: Key Insight 2 — why button coordinates cannot move</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: KEY INSIGHT 2 (STATIC SIZE GRID) -->
+      <section class="slide" data-slide="6">
+        <div class="slide-header">
+          <p class="kicker">06 · Key Insight 2</p>
+          <h1 class="action-title">
+            Because a shopper’s thumb moves the instant buttons appear, the size grid must stay frozen at 0 px shift from first paint.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2-equal">
+            <div class="cloud-box">
+              <p class="badge-fail" style="margin-bottom: 8px;">BEFORE · UNLOCKED ABOVE-THE-FOLD</p>
+              <p class="box-title">Every late asset moves the target</p>
+              <div class="spec-row">
+                <span class="spec-key">Hero &lt;img&gt;</span>
+                <span class="spec-val" style="color: var(--nike-sale);">0 px height until download completes</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Price &amp; Font</span>
+                <span class="spec-val" style="color: var(--nike-sale);">Box resizes when web font swaps in</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Size Grid</span>
+                <span class="spec-val" style="color: var(--nike-sale);">Empty until client fetch('/sizes.json') resolves</span>
+              </div>
+            </div>
+
+            <div class="ink-box">
+              <p class="badge-pass" style="color: #1eaa52; margin-bottom: 8px;">AFTER · FROZEN AT FIRST PAINT (0 PX SHIFT)</p>
+              <p class="box-title" style="color: #ffffff;">Thumb lands on the exact size it aimed for</p>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">Hero &lt;img&gt;</span>
+                <span class="spec-val" style="color: #ffffff;">Explicit 375 × 375 + aspect-square container</span>
+              </div>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">Price &amp; Font</span>
+                <span class="spec-val" style="color: #ffffff;">min-height: 32 px + self-hosted Inter woff2</span>
+              </div>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">Size Grid</span>
+                <span class="spec-val" style="color: #ffffff;">Pre-hydrated 26 sizes at t = 0 + alerts below grid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Verified Slow 4G vertical grid movement: 0 px</span>
+          <span>Next: How we built the layout &amp; stock protections</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: SOLUTION (ARCHITECTURE & STOCK ACCURACY) -->
+      <section class="slide" data-slide="7">
+        <div class="slide-header">
+          <p class="kicker">07 · The Solution (Architecture)</p>
+          <h1 class="action-title">
+            Reserving every above-the-fold box and disabling the 9 sold-out sizes from the 8 December snapshot keeps taps accurate.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="cloud-box">
+              <p class="kicker" style="margin-bottom: 6px;">01 · Media Lock</p>
+              <p class="box-title">Studio WebP + 1:1 Bounds</p>
+              <p class="box-copy">
+                Replaced vector placeholders with two 750 × 750 WebP studio photos (<strong class="tabular-nums">23 KB</strong> &amp; <strong class="tabular-nums">28 KB</strong>) inside a fixed <code style="font-size:12px;">aspect-square</code> stage with <code style="font-size:12px;">fetchPriority="high"</code>.
+              </p>
+            </div>
+
+            <div class="cloud-box">
+              <p class="kicker" style="margin-bottom: 6px;">02 · Typography Lock</p>
+              <p class="box-title">Price min-height + woff2</p>
+              <p class="box-copy">
+                Locked <code style="font-size:12px;">[data-testid="price"]</code> to <code style="font-size:12px;">min-height: 28px</code> inside a <code style="font-size:12px;">32px</code> wrapper using self-hosted <code style="font-size:12px;">Inter</code> with <code style="font-size:12px;">font-synthesis: none</code> and <code style="font-size:12px;">tabular-nums</code>.
+              </p>
+            </div>
+
+            <div class="cloud-box">
+              <p class="kicker" style="margin-bottom: 6px;">03 · Stock Lock</p>
+              <p class="box-title">Disabled Sold-Out States</p>
+              <p class="box-copy">
+                Matched <code style="font-size:12px;">!in_stock || stock_status === 'sold_out'</code> across all 26 sizes—rendering the 9 sold-out buttons greyed out, struck through, and <code style="font-size:12px;">disabled</code> in place.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Styled with Nike DESIGN.md tokens (#111111 / #ffffff / #f5f5f5)</span>
+          <span>Next: Tools, automated CI guardrails, and final results</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: SOLUTION (TOOLS, CI & RESULTS) -->
+      <section class="slide" data-slide="8">
+        <div class="slide-header">
+          <p class="kicker">08 · Solution (Tools, CI &amp; Results)</p>
+          <h1 class="action-title">
+            Automated CI checks on the live Vercel deploy enforce our speed budget and stock accuracy on every GitHub push.
+          </h1>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2-equal">
+            <div class="cloud-box">
+              <p class="box-title">Build &amp; Verification Stack</p>
+              <div class="spec-row">
+                <span class="spec-key">Build &amp; Design</span>
+                <span class="spec-val">Next.js 16 + Tailwind + Nike DESIGN.md</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Throttled Trace</span>
+                <span class="spec-val">Chrome DevTools MCP (Slow 4G + 4× CPU)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Live Hosting</span>
+                <span class="spec-val">Vercel connected to digitaleye-ux/Nike-Size-Run</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">CI Parity Gate</span>
+                <span class="spec-val">verify-sizes-snapshot.mjs fails on drift</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">Speed Budget</span>
+                <span class="spec-val">Score ≥ 90 · Shift ≤ 0 px · Button ≥ 44 px</span>
+              </div>
+            </div>
+
+            <div class="ink-box">
+              <p class="kicker" style="color: #9e9ea0; margin-bottom: 8px;">Live Vercel Slow 4G Lighthouse</p>
+              <div class="grid-2-equal" style="gap: 16px; margin-bottom: 16px;">
+                <div>
+                  <p class="stat-num tabular-nums">98</p>
+                  <p class="stat-label">Performance</p>
+                </div>
+                <div>
+                  <p class="stat-num tabular-nums">0.000</p>
+                  <p class="stat-label">CLS (0 px shift)</p>
+                </div>
+              </div>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">First Contentful Paint (FCP)</span>
+                <span class="spec-val tabular-nums" style="color: #ffffff;">0.9 s</span>
+              </div>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">Largest Contentful Paint (LCP)</span>
+                <span class="spec-val tabular-nums" style="color: #ffffff;">2.0 s</span>
+              </div>
+              <div class="spec-row" style="border-color: #39393b;">
+                <span class="spec-key" style="color: #9e9ea0;">Best Practices · SEO · Accessibility</span>
+                <span class="spec-val tabular-nums" style="color: #ffffff;">100 · 100 · 96</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span>Verified live at https://nike-size-run-mu.vercel.app</span>
+          <div class="slide-pills" id="slidePills"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const counter = document.getElementById('counter');
+      const progressFill = document.getElementById('progressFill');
+      const pillsWrap = document.getElementById('slidePills');
+      let current = 0;
+
+      // Build slide indicator pills on slide 8 footer (and mirror across navigation)
+      slides.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'slide-dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+        dot.addEventListener('click', () => goTo(idx));
+        pillsWrap.appendChild(dot);
+      });
+
+      function goTo(index) {
+        current = Math.max(0, Math.min(total - 1, index));
+        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        counter.textContent = (current + 1) + ' / ' + total;
+        progressFill.style.width = (((current + 1) / total) * 100) + '%';
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === total - 1;
+        Array.from(pillsWrap.children).forEach((d, i) =>
+          d.classList.toggle('active', i === current)
+        );
+      }
+
+      prevBtn.addEventListener('click', () => goTo(current - 1));
+      nextBtn.addEventListener('click', () => goTo(current + 1));
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === 'Home') {
+          goTo(0);
+        } else if (e.key === 'End') {
+          goTo(total - 1);
+        }
+      });
+
+      goTo(0);
+    })();
+  </script>
+</body>
+</html>
